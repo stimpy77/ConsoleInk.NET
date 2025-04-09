@@ -37,11 +37,13 @@ Enhance the `MarkdownConsoleWriter` to:
 * **Fixed Skipped Test:** Corrected logic and expectations for `Render_ListThenCodeBlock`.
 * **Debugging:** Added detailed logging framework (`_logger`, `_log`), used it to diagnose issues. Corrected various test expectations based on logs and refined logic.
 * **Test Harness Fix:** Corrected `AssertRender` to handle line endings consistently (normalize both to LF), accept `MarkdownRenderOptions`, and provide detailed log output on failure.
-* **Fixed `Write(string)` Multi-line Handling:** Corrected parsing logic to handle input strings containing multiple `
-` or `
-` correctly.
+* **Fixed `Write(string)` Multi-line Handling:** Corrected parsing logic to handle input strings containing multiple `\r\n` or `\n` correctly.
 * **Fixed Heading Rendering:** Ensured `WriteHeading` was called correctly from `ProcessLine`.
 * **Fixed GFM Table Alignment & Missing Cells:** Corrected `ParseAndStoreTableHeaderAndSeparator` to handle missing separator cells, ensuring alignment list matches column count. Corrected `WriteTable` to use actual column alignment for header padding. Adjusted `SplitTableRow` for robustness. Corrected expected output in related tests (`Render_TableWithAlignment`, `Render_TableWithMissingCells`). (**RESOLVED**)
+* **Added C# Demo Project:** Created `ConsoleInk.Demo` project with example usage and added it to the solution.
+* **Configured NuGet Packaging:** Updated `ConsoleInk.Net.csproj` with metadata, SourceLink, and file includes for NuGet package generation.
+* **Added PowerShell Sample Script:** Created `samples/PowerShell/Demo.ps1` demonstrating direct DLL usage.
+* **Updated README:** Reflected project structure changes, demo/sample additions, and packaging setup in `README.md`.
 
 ## Current Test Status
 
