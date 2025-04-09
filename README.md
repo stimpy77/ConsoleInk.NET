@@ -19,6 +19,8 @@
 
 ## Installation
 
+**The following is planned, not actual.**
+
 ### NuGet Package Manager
 
 ```powershell
