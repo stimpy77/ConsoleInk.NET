@@ -19,7 +19,7 @@
 
 ## Installation
 
-Once published, you can install the library via NuGet.
+You can install the library via NuGet.
 
 ### NuGet Package Manager
 
