@@ -4,6 +4,47 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <!-- NuGet Package Information -->
+    <PackageId>ConsoleInk.Net</PackageId>
+    <Version>0.1.0</Version> <!-- Or use 1.0.0-alpha1 etc. -->
+    <Authors>Jon Davis</Authors> <!-- UPDATE THIS -->
+    <Company>Envigorous Dynamics, LLC</Company> <!-- UPDATE THIS -->
+    <Description>A lightweight, zero-dependency .NET library for rendering Markdown text directly into ANSI-formatted output suitable for modern console applications. Focuses on streaming processing for efficient rendering.</Description>
+    <Copyright>Copyright (c) $([System.DateTime]::UtcNow.ToString(yyyy)) Jonathan Michael Davis or Envigorous Dynamics, LLC</Copyright> <!-- UPDATE THIS -->
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/stimpy77/ConsoleInk.NET</RepositoryUrl> <!-- UPDATE THIS -->
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>markdown;console;ansi;terminal;net;netstandard;powershell;streaming;rendering</PackageTags>
+    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+    <!-- Source Link & Symbols -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <Deterministic>true</Deterministic>
+
+    <!-- Optional: Generate XML documentation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Ensure the XML file path is correct relative to the output -->
+    <!-- <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile> -->
+
   </PropertyGroup>
+
+  <!-- Include README and LICENSE files in the package -->
+  <ItemGroup>
+    <!-- Note: These paths are relative to the project file (src/ConsoleInk.Net/ConsoleInk.Net.csproj) -->
+    <!-- They assume README.md and LICENSE are in the root directory, one level up -->
+    <None Include="../../README.md" Pack="true" PackagePath="\"/>
+    <None Include="../../LICENSE" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+  <!-- Add SourceLink package reference for source debugging -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+  </ItemGroup>
 
 </Project>
