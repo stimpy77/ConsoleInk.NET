@@ -195,6 +195,33 @@ namespace ConsoleInk
         /// <returns>The ANSI escape sequence string.</returns>
         public static string BgColorTrue(byte r, byte g, byte b) => $"{Csi}48;2;{r};{g};{b}m";
 
+        // --- OSC 8 Hyperlinks ---
+        // Format: OSC 8 ; params ; URI ST
+        // OSC: ESC ]
+        // ST: ESC \ (represented as Esc + @"\")
+        private const string Osc = Esc + "]";
+        private const string St = Esc + @"\"; // String Terminator
+        private const string Bel = "\a"; // Bell character as alternative terminator
+
+        /// <summary>
+        /// Generates the OSC 8 sequence to start a hyperlink.
+        /// </summary>
+        /// <param name="url">The target URL.</param>
+        /// <param name="id">Optional ID for the link.</param>
+        /// <returns>The ANSI escape sequence to start the hyperlink.</returns>
+        public static string HyperlinkStart(string url, string id = "")
+        {
+            if (string.IsNullOrEmpty(url)) return string.Empty;
+            string parameters = string.IsNullOrEmpty(id) ? "" : $"id={id}";
+            return $"{Osc}8;{parameters};{url}{Bel}";
+        }
+
+        /// <summary>
+        /// Generates the OSC 8 sequence to end a hyperlink.
+        /// </summary>
+        /// <returns>The ANSI escape sequence to end the hyperlink.</returns>
+        public static string HyperlinkEnd() => $"{Osc}8;;{St}";
+
         /// <summary>
         /// Gets the ANSI escape sequence for a standard System.ConsoleColor.
         /// </summary>

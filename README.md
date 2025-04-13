@@ -11,11 +11,74 @@
 *   **Streaming Markdown Processing:** Renders Markdown incrementally, perfect for real-time display.
 *   **Zero External Dependencies:** Relies only on the .NET Base Class Library (BCL).
 *   **ANSI Formatting:** Outputs text with ANSI escape codes for colors and styles (bold, italic, underline, strikethrough).
-*   **CommonMark & GFM Support:** Handles standard Markdown syntax including headings, lists (ordered, unordered, task lists), code blocks (indented), blockquotes, links (inline, reference*), images (inline alt text), and emphasis. Basic GFM table support is included. (*Reference links render literally if definition appears after usage due to streaming nature*).
+*   **CommonMark & GFM Support:** Handles standard Markdown syntax including headings, lists (ordered, unordered, task lists), code blocks (indented and fenced), blockquotes, links (inline, reference*), images (inline alt text), and emphasis. Basic GFM table support is included. (*Reference links render literally if definition appears after usage due to streaming nature*).
 *   **Theming:** Configurable themes (`Default`, `Monochrome`, or custom) to control output appearance.
 *   **HTML Stripping:** Removes HTML tags from the output by default.
 *   **Word Wrapping:** Automatically wraps text to fit the specified console width.
 *   **.NET Library & PowerShell Usage:** Provides a C# library (`ConsoleInk.Net`) and can be used directly from PowerShell.
+*   **Hyperlinks:** Supports true OSC-8 hyperlinks in terminal emulators that support them, with fallback to styled text rendering.
+*   **Code Blocks:** Handles both indented and fenced code blocks with proper line preservation, indentation control, and syntax-highlighting style.
+
+## Feature Details
+
+### Hyperlinks
+
+ConsoleInk.NET supports two styles of hyperlink rendering:
+
+1. **True Hyperlinks (OSC-8)**: When `UseHyperlinks = true` (default) and the terminal supports it, clickable links are rendered using the OSC-8 ANSI escape sequence standard.
+2. **Styled Text Fallback**: When `UseHyperlinks = false` or in terminals without hyperlink support, links are rendered with styled text showing the URL in parentheses.
+
+```csharp
+var options = new MarkdownRenderOptions
+{
+    UseHyperlinks = true,  // Enable true hyperlinks (default)
+    Theme = new ConsoleTheme 
+    { 
+        LinkTextStyle = Ansi.Underline + Ansi.FgBrightBlue,  // Customize link text appearance
+        LinkUrlStyle = Ansi.FgBrightCyan                     // Customize URL text appearance (when not using hyperlinks)
+    }
+};
+
+// Render markdown with hyperlinks
+string markdown = "Visit [GitHub](https://github.com/) for more info.";
+MarkdownConsole.Render(markdown, Console.Out, options);
+```
+
+### Code Blocks
+
+ConsoleInk.NET supports both indented and fenced code blocks with careful handling of line breaks:
+
+1. **Indented Code Blocks**: Code indented with 4 spaces or a tab.
+2. **Fenced Code Blocks**: Code surrounded by triple backticks (```), optionally specifying a language.
+
+Code blocks preserve line breaks, maintain indentation within the block as written in the original markdown, and are rendered with optional syntax highlighting styles.
+
+```csharp
+var options = new MarkdownRenderOptions
+{
+    Theme = new ConsoleTheme 
+    { 
+        CodeBlockStyle = Ansi.FgBrightBlack  // Light gray code blocks
+    }
+};
+
+// Example with fenced code block
+string markdown = """
+# Code Example
+
+```csharp
+// This code will be rendered with proper indentation
+if (condition)
+{
+    Console.WriteLine("Indented line");
+}
+```
+
+Regular text continues after the code block.
+""";
+
+MarkdownConsole.Render(markdown, Console.Out, options);
+```
 
 ## Installation
 

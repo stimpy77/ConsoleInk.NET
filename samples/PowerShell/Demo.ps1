@@ -104,6 +104,45 @@ try {
 }
 
 Write-Host "`n-------------------------------------------------"
+Read-Host -Prompt "Press Enter to start the hyperlink demo..."
+
+# --- Demo 1.5: Hyperlink Demo ---
+Write-Host "`n--- Demo showing clickable hyperlinks ---`n" -ForegroundColor Green
+
+# Sample markdown with links
+$hyperlinkMarkdown = @"
+# Hyperlink Feature Demo
+
+Here are some **clickable links** that use the OSC 8 hyperlink protocol.
+
+## Standard Link
+* [Microsoft Docs](https://learn.microsoft.com/powershell)
+
+## Reference Style Link
+* [PowerShell Gallery][PSGallery]
+
+[PSGallery]: https://www.powershellgallery.com
+"@
+
+# Create options with hyperlinks enabled
+$hyperlinkOptions = [ConsoleInk.MarkdownRenderOptions]::new()
+$hyperlinkOptions.ConsoleWidth = $consoleWidth
+$hyperlinkOptions.EnableColors = $true
+$hyperlinkOptions.Theme = [ConsoleInk.ConsoleTheme]::Default
+$hyperlinkOptions.UseHyperlinks = $true # Enable hyperlinks!
+
+# Render the hyperlink markdown
+try {
+    $hyperlinkOutput = [ConsoleInk.MarkdownConsole]::Render($hyperlinkMarkdown, $hyperlinkOptions)
+    Write-Host $hyperlinkOutput
+    
+    Write-Host "Note: Hyperlinks are rendered using OSC 8 escape sequences." -ForegroundColor Yellow
+    Write-Host "They are clickable in terminals that support this feature (like Windows Terminal)." -ForegroundColor Yellow
+} catch {
+    Write-Error "Error during hyperlink rendering: $($_.Exception.Message)"
+}
+
+Write-Host "`n-------------------------------------------------"
 Read-Host -Prompt "Press Enter to start the streaming demo..."
 
 # --- Demo 2: Streaming Render Method ---

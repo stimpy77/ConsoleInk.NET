@@ -162,6 +162,99 @@ namespace ConsoleInk.Tests
             AssertRender(inputMarkdown, expectedOutput, options, trimLeadingWhitespace: false);
         }
 
+        [Fact]
+        public void Render_FencedCodeBlock_Simple()
+        {
+            // Arrange
+            var inputMarkdown = 
+                "```\n" +
+                "var x = 1;\n" +
+                "var y = 2;\n" +
+                "```";
+            var expectedOutput = 
+                "var x = 1;" + Environment.NewLine +
+                "var y = 2;" + Environment.NewLine; // Code blocks end with newline
+           
+            var options = new MarkdownRenderOptions { EnableColors = false }; 
+            AssertRender(inputMarkdown, expectedOutput, options, trimLeadingWhitespace: false);
+        }
+
+        [Fact]
+        public void Render_FencedCodeBlock_WithLanguage()
+        {
+            // Arrange
+            var inputMarkdown = 
+                "```csharp\n" +
+                "var x = 1;\n" +
+                "var y = 2;\n" +
+                "```";
+            var expectedOutput = 
+                "var x = 1;" + Environment.NewLine +
+                "var y = 2;" + Environment.NewLine; // Code blocks end with newline
+           
+            var options = new MarkdownRenderOptions { EnableColors = false }; 
+            AssertRender(inputMarkdown, expectedOutput, options, trimLeadingWhitespace: false);
+        }
+
+        [Fact]
+        public void Render_FencedCodeBlock_PreservesIndentation()
+        {
+            // Arrange
+            var inputMarkdown = 
+                "```\n" +
+                "    indented line 1\n" +
+                "  indented line 2\n" +
+                "```";
+            var expectedOutput = 
+                "    indented line 1" + Environment.NewLine +
+                "  indented line 2" + Environment.NewLine; // Preserves original indentation
+           
+            var options = new MarkdownRenderOptions { EnableColors = false }; 
+            AssertRender(inputMarkdown, expectedOutput, options, trimLeadingWhitespace: false);
+        }
+
+        [Fact]
+        public void Render_ParagraphThenFencedCodeBlock()
+        {
+            // Arrange
+            var inputMarkdown = 
+                "This is a paragraph.\n" +
+                "\n" +
+                "```\n" +
+                "Code line 1\n" +
+                "Code line 2\n" +
+                "```";
+            var expectedOutput = 
+                "This is a paragraph." + Environment.NewLine +
+                Environment.NewLine + // Blank line separation
+                "Code line 1" + Environment.NewLine +
+                "Code line 2" + Environment.NewLine; // Code blocks end with newline
+           
+            var options = new MarkdownRenderOptions { ConsoleWidth = 80, EnableColors = false }; 
+            AssertRender(inputMarkdown, expectedOutput, options, trimLeadingWhitespace: false);
+        }
+
+        [Fact]
+        public void Render_FencedCodeBlockThenParagraph()
+        {
+            // Arrange
+            var inputMarkdown = 
+                "```\n" +
+                "Code line 1\n" +
+                "Code line 2\n" +
+                "```\n" +
+                "\n" +
+                "This is a paragraph."; // Needs blank line to separate
+            var expectedOutput = 
+                "Code line 1" + Environment.NewLine +
+                "Code line 2" + Environment.NewLine + // Code block ends with newline
+                Environment.NewLine + // Blank line separation
+                "This is a paragraph." + Environment.NewLine; // Paragraph ends with newline
+           
+            var options = new MarkdownRenderOptions { ConsoleWidth = 80, EnableColors = false }; 
+            AssertRender(inputMarkdown, expectedOutput, options, trimLeadingWhitespace: false);
+        }
+
         [Theory]
         [InlineData("# Heading 1", Ansi.Bold, "Heading 1")] // Default H1 Style is Bold
         [InlineData("## Heading 2", Ansi.Underline, "Heading 2")] // Default H2 Style is Underline
@@ -557,6 +650,58 @@ namespace ConsoleInk.Tests
             var input = "Look: ![Alt text](image.png \"Title\")";
             var options = new MarkdownRenderOptions { EnableColors = true };
             var expected = $"Look: [Image: {Ansi.Faint}Alt text{Ansi.Reset}]{Environment.NewLine}"; // Use Env.NewLine
+            AssertRender(input, expected, options, trimLeadingWhitespace: false);
+        }
+
+        // --- Hyperlink Tests ---
+
+        [Fact]
+        public void Render_InlineLink_AsHyperlink()
+        {
+            var input = "This is [a link](http://example.com).";
+            var options = new MarkdownRenderOptions { UseHyperlinks = true };
+            var esc = "\x1B";
+            var bel = "\a";
+            var expected = $"This is {esc}]8;;http://example.com{bel}a link{esc}]8;;{esc}\\.{Environment.NewLine}";
+            AssertRender(input, expected, options, trimLeadingWhitespace: false);
+        }
+
+        [Fact]
+        public void Render_InlineLink_AsStyledText_WhenHyperlinksDisabled()
+        {
+            var input = "This is [a link](http://example.com).";
+            var options = new MarkdownRenderOptions { UseHyperlinks = false, EnableColors = true }; // Explicitly disable hyperlinks
+            var expected = $"This is {options.Theme.LinkTextStyle}a link{Ansi.Reset} ({options.Theme.LinkUrlStyle}http://example.com{Ansi.Reset}).{Environment.NewLine}";
+            AssertRender(input, expected, options, trimLeadingWhitespace: false);
+        }
+
+        [Fact]
+        public void Render_ReferenceLink_AsHyperlink()
+        {
+            var input = "[ref]: http://spec.com\nSee [the spec][ref]."; // Definition first
+            var options = new MarkdownRenderOptions { UseHyperlinks = true };
+            var esc = "\x1B";
+            var bel = "\a";
+            var expected = $"See {esc}]8;;http://spec.com{bel}the spec{esc}]8;;{esc}\\.{Environment.NewLine}"; // Expect separation newline after link def
+            AssertRender(input, expected, options, trimLeadingWhitespace: false);
+        }
+
+        [Fact]
+        public void Render_ReferenceLink_AsStyledText_WhenHyperlinksDisabled()
+        {
+            var input = "[ref]: http://spec.com\nSee [the spec][ref]."; // Definition first
+            var options = new MarkdownRenderOptions { UseHyperlinks = false, EnableColors = true }; // Explicitly disable hyperlinks
+            var expected = $"See {options.Theme.LinkTextStyle}the spec{Ansi.Reset} ({options.Theme.LinkUrlStyle}http://spec.com{Ansi.Reset}).{Environment.NewLine}"; // Expect separation newline after link def
+            AssertRender(input, expected, options, trimLeadingWhitespace: false);
+        }
+
+        [Fact]
+        public void Render_ReferenceLink_Literal_WhenHyperlinksEnabledButDefAfter()
+        {
+            // Streaming limitation: If definition comes after usage, even with hyperlinks enabled, it renders literally.
+            var input = "See [the spec][ref].\n\n[ref]: http://spec.com"; 
+            var options = new MarkdownRenderOptions { UseHyperlinks = true };
+            var expected = "See [the spec][ref]." + Environment.NewLine + Environment.NewLine;
             AssertRender(input, expected, options, trimLeadingWhitespace: false);
         }
 

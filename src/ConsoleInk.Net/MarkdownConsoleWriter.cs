@@ -20,7 +20,8 @@ namespace ConsoleInk
         Heading3,
         UnorderedList, // Represents being within an unordered list item
         OrderedList,   // Represents being within an ordered list item
-        CodeBlock, // Placeholder for later
+        CodeBlock, // Indented code block (4 spaces or tab)
+        FencedCodeBlock, // Fenced code block (```)
         Blockquote, // Placeholder for later
         LinkDefinition, // A line defining a reference link, e.g., [label]: url "title"
         Table // GFM Table
@@ -433,17 +434,18 @@ namespace ConsoleInk
             switch (blockType)
             {
                 case MarkdownBlockType.Paragraph:
+                    // Write buffered paragraph content
                     if (_paragraphBuffer.Length > 0)
                     {
-                        var paragraphText = _paragraphBuffer.ToString();
-                        _log($"FinalizeBlock: Finalizing Paragraph. Content length: {_paragraphBuffer.Length}. Calling WriteParagraph.");
-                        WriteParagraph(paragraphText); // Renders content + its own trailing newline
+                        _log($"FinalizeBlock: Finalizing Paragraph. Content length: {_paragraphBuffer.Length}. Calling WriteFormattedParagraph.");
+                        WriteFormattedParagraph(_paragraphBuffer.ToString());
                         _paragraphBuffer.Clear();
-                        producedOutput = true; 
+                        producedOutput = true;
                     }
                     else
                     {
-                        _log("FinalizeBlock: Finalizing Paragraph. Buffer empty, no output.");
+                        _log("FinalizeBlock: Finalizing Paragraph. Buffer empty.");
+                        producedOutput = false;
                     }
                     break;
                 case MarkdownBlockType.CodeBlock:
@@ -451,6 +453,12 @@ namespace ConsoleInk
                     ResetCurrentStyle(); // Reset style
                     // Code block lines write their own newlines. Finalization only resets style.
                     producedOutput = true; // Assume if we were in code block, output happened.
+                    break;
+                case MarkdownBlockType.FencedCodeBlock:
+                    _log("FinalizeBlock: Finalizing FencedCodeBlock. Resetting style.");
+                    ResetCurrentStyle(); // Reset style
+                    // Fenced code block lines write their own newlines. Finalization only resets style.
+                    producedOutput = true; // Assume if we were in fenced code block, output happened.
                     break;
                 case MarkdownBlockType.UnorderedList:
                 case MarkdownBlockType.OrderedList:
@@ -517,6 +525,7 @@ namespace ConsoleInk
                 MarkdownBlockType.UnorderedList or
                 MarkdownBlockType.OrderedList or
                 MarkdownBlockType.CodeBlock or
+                MarkdownBlockType.FencedCodeBlock or
                 MarkdownBlockType.Blockquote or
                 MarkdownBlockType.Table or
                 MarkdownBlockType.Heading1 or
@@ -567,6 +576,35 @@ namespace ConsoleInk
             int indentation = line.Length - trimmedLine.Length;
             levelOrIndent = indentation;
             _log($"DetermineBlockType: Trimmed='{trimmedLine}', Indentation={indentation}");
+
+            // Check for fenced code block markers
+            if (trimmedLine.StartsWith("```"))
+            {
+                // If we're already in a fenced code block, check if this is the end marker
+                if (_currentBlockType == MarkdownBlockType.FencedCodeBlock)
+                {
+                    // This is the end marker, so return None to trigger finalization
+                    _log("DetermineBlockType: Detected end of fenced code block");
+                    content = string.Empty; // No content needed for the end marker
+                    return MarkdownBlockType.None;
+                }
+                else
+                {
+                    // This is the start of a new fenced code block
+                    // Extract language if provided (e.g., ```csharp)
+                    content = trimmedLine.Length > 3 ? trimmedLine.Substring(3).Trim() : string.Empty;
+                    _log($"DetermineBlockType: Detected start of fenced code block. Language: '{content}'");
+                    return MarkdownBlockType.FencedCodeBlock;
+                }
+            }
+            
+            // If we're inside a fenced code block, continue it
+            if (_currentBlockType == MarkdownBlockType.FencedCodeBlock)
+            {
+                content = line; // Keep the entire line including indentation
+                _log("DetermineBlockType: Continuing fenced code block");
+                return MarkdownBlockType.FencedCodeBlock;
+            }
 
             // 1. Link Definition (Must be at start of line, no indent allowed for definition itself)
             if (indentation == 0)
@@ -806,6 +844,17 @@ namespace ConsoleInk
                     _lastFinalizedBlockProducedOutput = false; // Code block continues
                     _log($"ProcessLine: Processing Code Block line. Output: '{contentLine}'");
                     break;
+                    
+                case MarkdownBlockType.FencedCodeBlock:
+                    // For fenced code blocks, we preserve the original line completely
+                    // Skip the opening and closing fence lines
+                    if (!line.StartsWith("```"))
+                    {
+                        _outputWriter.WriteLine(line);
+                    }
+                    _lastFinalizedBlockProducedOutput = false; // Fenced code block continues
+                    _log($"ProcessLine: Processing Fenced Code Block line. Output: '{line}'");
+                    break;
 
                 case MarkdownBlockType.Paragraph:
                     _log($"ProcessLine: Processing Paragraph line. Content: '{content}'");
@@ -1036,6 +1085,76 @@ namespace ConsoleInk
             _log("WriteParagraph END (Newline removed)");
         }
 
+        // Internal helper for WriteFormattedParagraph to handle recursive parsing for links/images
+        private void FormatAndAppendSpan(StringBuilder outputBuffer, string textSpan, Stack<string> styleStack)
+        {
+            // This is a simplified version of the main loop, focused only on applying styles
+            // It does *not* handle links, images, or HTML stripping recursively within the span.
+            for (int i = 0; i < textSpan.Length; i++)
+            {
+                char c = textSpan[i];
+                bool processed = false;
+
+                // Check for escaped marker
+                if (c == '\\' && i + 1 < textSpan.Length)
+                {
+                    char nextChar = textSpan[i + 1];
+                    if (nextChar == '*' || nextChar == '_' || nextChar == '~' || nextChar == '\\') // Only escape style markers and backslash
+                    {
+                        outputBuffer.Append(nextChar);
+                        i++;
+                        processed = true;
+                    }
+                    else
+                    {
+                        outputBuffer.Append(c); // Append backslash if not escaping a style marker
+                    }
+                }
+                // Check for emphasis markers
+                else if (c == '*' || c == '_' || c == '~')
+                {
+                    int markerCount = 1;
+                    while (i + markerCount < textSpan.Length && textSpan[i + markerCount] == c)
+                    {
+                        markerCount++;
+                    }
+
+                    string marker = new string(c, markerCount);
+                    string? styleCode = null;
+                    string? styleOffCode = null;
+                    string? styleType = null;
+
+                    if (marker == "***" || marker == "___") { styleCode = _options.Theme.BoldStyle + _options.Theme.ItalicStyle; styleOffCode = Ansi.ItalicOff + Ansi.BoldOff; styleType = "bolditalic"; }
+                    else if (marker == "**" || marker == "__") { styleCode = _options.Theme.BoldStyle; styleOffCode = Ansi.BoldOff; styleType = "bold"; }
+                    else if (marker == "*" || marker == "_") { styleCode = _options.Theme.ItalicStyle; styleOffCode = Ansi.ItalicOff; styleType = "italic"; }
+                    else if (marker == "~~") { styleCode = _options.Theme.StrikethroughStyle; styleOffCode = Ansi.StrikethroughOff; styleType = "strike"; }
+
+                    if (styleCode != null && styleOffCode != null && styleType != null)
+                    {
+                        if (styleStack.Count > 0 && styleStack.Peek() == styleType)
+                        {
+                            outputBuffer.Append(styleOffCode);
+                            styleStack.Pop();
+                        }
+                        else
+                        {
+                            outputBuffer.Append(styleCode);
+                            styleStack.Push(styleType);
+                        }
+                        i += markerCount - 1;
+                        processed = true;
+                    }
+                    // else: Not a valid marker combo, treat literally
+                }
+
+                // If the character was not part of an escape or style marker, append it directly
+                if (!processed)
+                {
+                    outputBuffer.Append(c);
+                }
+            }
+        }
+
         private void WriteFormattedParagraph(string text)
         {
             if (string.IsNullOrEmpty(text))
@@ -1085,9 +1204,12 @@ namespace ConsoleInk
 
                             // Render the image alt text
                             outputBuffer.Append(_options.Theme.ImagePrefix);
-                            outputBuffer.Append(_options.Theme.ImageAltTextStyle);
-                            outputBuffer.Append(altText); // TODO: Recursively parse altText for emphasis?
-                            outputBuffer.Append(Ansi.Reset); // Reset styles after alt text
+                            
+                            // Apply Faint style to alt text
+                            outputBuffer.Append(Ansi.Faint);
+                            outputBuffer.Append(altText);
+                            outputBuffer.Append(Ansi.Reset);
+                            
                             outputBuffer.Append(_options.Theme.ImageSuffix);
 
                             i = urlPartEnd; // Move parser index past the entire image markdown
@@ -1097,7 +1219,7 @@ namespace ConsoleInk
                     // If not a valid image structure, treat '!' literally (handled by default flow)
                 }
                 // Check for inline HTML tag start
-                else if (c == '<')
+                else if (_options.StripHtml && c == '<') // Check option
                 {
                     // Attempt to find the closing >
                     int tagEnd = text.IndexOf('>', i + 1);
@@ -1122,14 +1244,19 @@ namespace ConsoleInk
                             string urlPart = text.Substring(linkTextEnd + 2, urlPartEnd - (linkTextEnd + 2));
                             
                             string url;
-                            string title = null;
+                            string? title = null;
 
                             // Basic parsing for url and optional title
                             int firstSpace = urlPart.IndexOf(' ');
-                            if (firstSpace != -1 && urlPart.Length > firstSpace + 2 && urlPart[firstSpace + 1] == '"' && urlPart.EndsWith('"'))
+                            bool hasTitle = firstSpace != -1 && urlPart.Length > firstSpace + 2 && 
+                                            ((urlPart[firstSpace + 1] == '"' && urlPart.EndsWith('"')) || 
+                                             (urlPart[firstSpace + 1] == '\'' && urlPart.EndsWith('\'')) ||
+                                             (urlPart[firstSpace + 1] == '(' && urlPart.EndsWith(')')));
+
+                            if (hasTitle)
                             {
                                 url = urlPart.Substring(0, firstSpace);
-                                title = urlPart.Substring(firstSpace + 2, urlPart.Length - firstSpace - 3); // Extract title
+                                title = urlPart.Substring(firstSpace + 2, urlPart.Length - firstSpace - 3); // Extract title content
                             }
                             else
                             {
@@ -1137,14 +1264,48 @@ namespace ConsoleInk
                             }
 
                             // Render the link
-                            outputBuffer.Append(_options.Theme.LinkTextStyle);
-                            outputBuffer.Append(linkText); // TODO: Recursively parse linkText for emphasis?
-                            outputBuffer.Append(Ansi.Reset); // Reset styles after link text
-                            outputBuffer.Append(" (");
-                            outputBuffer.Append(_options.Theme.LinkUrlStyle);
-                            outputBuffer.Append(url);
-                            outputBuffer.Append(Ansi.Reset); // Reset styles after URL
-                            outputBuffer.Append(")");
+                            if (_options.UseHyperlinks && !string.IsNullOrEmpty(url))
+                            {
+                                // Handle hyperlink simply by writing each part directly
+                                outputBuffer.Append(Ansi.HyperlinkStart(url));
+                                
+                                // Use FormatAndAppendSpan to properly handle formatting within the link text
+                                var linkTextFormatted = new StringBuilder();
+                                var linkTextStyleStack = new Stack<string>(styleStack.Reverse()); // Clone stack state
+                                FormatAndAppendSpan(linkTextFormatted, linkText, linkTextStyleStack);
+                                outputBuffer.Append(linkTextFormatted.ToString());
+                                
+                                outputBuffer.Append(Ansi.HyperlinkEnd());
+                            }
+                            else
+                            {
+                                // Original rendering: Format link text, then add URL part
+                                outputBuffer.Append(_options.Theme.LinkTextStyle); // Apply base link style
+                                var linkTextFormatted = new StringBuilder();
+                                var linkTextStyleStack = new Stack<string>(styleStack.Reverse()); // Clone stack state
+                                linkTextStyleStack.Push("linkbase"); // Simulate base style being on stack for FormatAndAppendSpan
+                                FormatAndAppendSpan(linkTextFormatted, linkText, linkTextStyleStack);
+                                // Ensure any styles opened within linkText are closed *relative to base link style*
+                                while (linkTextStyleStack.Count > styleStack.Count + 1) // +1 for the pushed "linkbase"
+                                {
+                                    string styleTypeToClose = linkTextStyleStack.Pop();
+                                    if (styleTypeToClose == "bolditalic") linkTextFormatted.Append(Ansi.ItalicOff + Ansi.BoldOff);
+                                    else if (styleTypeToClose == "bold") linkTextFormatted.Append(Ansi.BoldOff);
+                                    else if (styleTypeToClose == "italic") linkTextFormatted.Append(Ansi.ItalicOff);
+                                    else if (styleTypeToClose == "strike") linkTextFormatted.Append(Ansi.StrikethroughOff);
+                                }
+                                linkTextStyleStack.Pop(); // Pop the simulated "linkbase"
+                                
+                                outputBuffer.Append(linkTextFormatted.ToString()); // Append formatted text
+                                outputBuffer.Append(Ansi.Reset); // Reset styles after link text (including base link style)
+                                
+                                // Append URL part
+                                outputBuffer.Append(" (");
+                                outputBuffer.Append(_options.Theme.LinkUrlStyle);
+                                outputBuffer.Append(url);
+                                outputBuffer.Append(Ansi.Reset); // Reset styles after URL
+                                outputBuffer.Append(")");
+                            }
                             // Title is ignored for console rendering for now
 
                             i = urlPartEnd; // Move parser index past the entire link
@@ -1203,14 +1364,48 @@ namespace ConsoleInk
                         if (possibleRefLinkParsed && label != null && linkText != null && _linkDefinitions.TryGetValue(label, out var definition))
                         {
                             // Render the link using the definition
-                            outputBuffer.Append(_options.Theme.LinkTextStyle);
-                            outputBuffer.Append(linkText); // TODO: Recursive parse?
-                            outputBuffer.Append(Ansi.Reset);
-                            outputBuffer.Append(" (");
-                            outputBuffer.Append(_options.Theme.LinkUrlStyle);
-                            outputBuffer.Append(definition.Url);
-                            outputBuffer.Append(Ansi.Reset);
-                            outputBuffer.Append(")");
+                            if (_options.UseHyperlinks && !string.IsNullOrEmpty(definition.Url))
+                            {
+                                // Handle hyperlink simply by writing each part directly
+                                outputBuffer.Append(Ansi.HyperlinkStart(definition.Url));
+                                
+                                // Use FormatAndAppendSpan to properly handle formatting within the link text
+                                var linkTextFormatted = new StringBuilder();
+                                var linkTextStyleStack = new Stack<string>(styleStack.Reverse()); // Clone stack state
+                                FormatAndAppendSpan(linkTextFormatted, linkText, linkTextStyleStack);
+                                outputBuffer.Append(linkTextFormatted.ToString());
+                                
+                                outputBuffer.Append(Ansi.HyperlinkEnd());
+                            }
+                            else
+                            {
+                                // Original rendering: Format link text, then add URL part
+                                outputBuffer.Append(_options.Theme.LinkTextStyle); // Apply base link style
+                                var linkTextFormatted = new StringBuilder();
+                                var linkTextStyleStack = new Stack<string>(styleStack.Reverse()); // Clone stack state
+                                linkTextStyleStack.Push("linkbase"); // Simulate base style being on stack
+                                FormatAndAppendSpan(linkTextFormatted, linkText, linkTextStyleStack);
+                                // Ensure any styles opened within linkText are closed *relative to base link style*
+                                while (linkTextStyleStack.Count > styleStack.Count + 1) // +1 for "linkbase"
+                                {
+                                    string styleTypeToClose = linkTextStyleStack.Pop();
+                                    if (styleTypeToClose == "bolditalic") linkTextFormatted.Append(Ansi.ItalicOff + Ansi.BoldOff);
+                                    else if (styleTypeToClose == "bold") linkTextFormatted.Append(Ansi.BoldOff);
+                                    else if (styleTypeToClose == "italic") linkTextFormatted.Append(Ansi.ItalicOff);
+                                    else if (styleTypeToClose == "strike") linkTextFormatted.Append(Ansi.StrikethroughOff);
+                                }
+                                linkTextStyleStack.Pop(); // Pop "linkbase"
+
+                                outputBuffer.Append(linkTextFormatted.ToString()); // Append formatted text
+                                outputBuffer.Append(Ansi.Reset); // Reset styles after link text (including base link style)
+                                
+                                // Append URL part
+                                outputBuffer.Append(" (");
+                                outputBuffer.Append(_options.Theme.LinkUrlStyle);
+                                outputBuffer.Append(definition.Url);
+                                outputBuffer.Append(Ansi.Reset); // Reset styles after URL
+                                outputBuffer.Append(")");
+                            }
                             // definition.Title is ignored
                             processed = true;
                             i = endMarkerIndex; // Advance 'i' ONLY if lookup succeeded and link was rendered
@@ -1240,8 +1435,9 @@ namespace ConsoleInk
                     else if (marker == "*" || marker == "_") { styleCode = _options.Theme.ItalicStyle; styleOffCode = Ansi.ItalicOff; styleType = "italic"; }
                     else if (marker == "~~") { styleCode = _options.Theme.StrikethroughStyle; styleOffCode = Ansi.StrikethroughOff; styleType = "strike"; }
 
-                    if (styleCode != null && styleOffCode != null) // Ensure we have both codes
+                    if (styleCode != null && styleOffCode != null && styleType != null) // Ensure we have all codes and type
                     {
+                        // Check if the same style is currently active
                         if (styleStack.Count > 0 && styleStack.Peek() == styleType)
                         {
                             outputBuffer.Append(styleOffCode); 
@@ -1249,20 +1445,14 @@ namespace ConsoleInk
                         }
                         else
                         {
+                            // Check for closing a different style if necessary (simplified: assumes styles don't interleave incorrectly)
                             outputBuffer.Append(styleCode); 
-                            if (styleType != null) // ADDED null check
-                            {
-                                styleStack.Push(styleType);
-                            }
+                            styleStack.Push(styleType);
                         }
-                        i += markerCount - 1; 
+                        i += markerCount - 1; // Advance past the marker characters
                         processed = true;
                     }
-                    else if (!processed) 
-                    {
-                        // If not a recognized style marker combo, append the char(s)
-                        outputBuffer.Append(c);
-                    }
+                    // else: Not a valid marker sequence, treat as literal
                 }
 
                 if (!processed)
@@ -1298,6 +1488,7 @@ namespace ConsoleInk
             switch (blockType)
             {
                 case MarkdownBlockType.CodeBlock:
+                case MarkdownBlockType.FencedCodeBlock:
                     ApplyStyle(_options.Theme.CodeBlockStyle);
                     break;
                 // Add cases for other block types if they need initial styling

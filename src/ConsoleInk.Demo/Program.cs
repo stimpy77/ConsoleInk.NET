@@ -62,6 +62,39 @@ Check out the ~~strikethrough~~ feature.
 
             Console.WriteLine("-----------------------------------------------");
             Console.WriteLine(@"
+Press Enter to start the hyperlink demo...");
+            Console.ReadLine();
+
+            // Demo for hyperlinks
+            Console.WriteLine("--- Demo with hyperlinks enabled ---");
+            Console.WriteLine("Hyperlinks can be rendered as clickable links in supported terminals:");
+            Console.WriteLine("-----------------------------------------------");
+            
+            string hyperlinkMarkdown = @"
+# Hyperlink Demo
+
+This is a standard link: [GitHub](https://github.com)
+
+This is a reference link: [Markdown Guide][guide]
+
+[guide]: https://www.markdownguide.org
+";
+
+            var hyperlinkOptions = new MarkdownRenderOptions
+            {
+                ConsoleWidth = TryGetConsoleWidth(80),
+                EnableColors = true,
+                Theme = ConsoleTheme.Default,
+                UseHyperlinks = true // Enable hyperlinks!
+            };
+
+            string hyperlinkOutput = MarkdownConsole.Render(hyperlinkMarkdown, hyperlinkOptions);
+            Console.WriteLine(hyperlinkOutput);
+            
+            Console.WriteLine("Note: Hyperlinks are rendered using OSC 8 escape sequences.");
+            Console.WriteLine("They are clickable in terminals that support this feature (like Windows Terminal).");
+            Console.WriteLine("-----------------------------------------------");
+            Console.WriteLine(@"
 Press Enter to start the streaming demo...");
             Console.ReadLine();
 
@@ -77,7 +110,7 @@ Press Enter to start the streaming demo...");
                 // Pass the same options to the streaming writer
                 using (var markdownWriter = new MarkdownConsoleWriter(Console.Out, options))
                 {
-                    string line;
+                    string? line;
                     while ((line = stringReader.ReadLine()) != null)
                     {
                         markdownWriter.WriteLine(line);
