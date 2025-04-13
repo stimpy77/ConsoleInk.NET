@@ -1,7 +1,7 @@
 # ConsoleInk.NET
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/stimpy77/ConsoleInk.NET) <!-- Replace with actual build status badge -->
-[![NuGet](https://img.shields.io/nuget/v/ConsoleInk.Net.svg)](https://www.nuget.org/packages/ConsoleInk.Net/) <!-- Replace with actual NuGet badge -->
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/stimpy77/ConsoleInk.NET) <!-- Placeholder Build Status Badge -->
+[![NuGet](https://img.shields.io/nuget/v/ConsoleInk.Net.svg)](https://www.nuget.org/packages/ConsoleInk.Net/) <!-- Placeholder NuGet Badge -->
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **ConsoleInk.NET** is a lightweight, zero-dependency .NET library for rendering Markdown text directly into ANSI-formatted output suitable for modern console applications. It focuses on streaming processing, enabling efficient rendering of Markdown content as it arrives.
@@ -11,7 +11,7 @@
 *   **Streaming Markdown Processing:** Renders Markdown incrementally, perfect for real-time display.
 *   **Zero External Dependencies:** Relies only on the .NET Base Class Library (BCL).
 *   **ANSI Formatting:** Outputs text with ANSI escape codes for colors and styles (bold, italic, underline, strikethrough).
-*   **CommonMark & GFM Support (Planned):** Aims to handle standard Markdown syntax including headings, lists, code blocks, blockquotes, links, images, emphasis, task lists, and basic tables. (Functionality is under development).
+*   **CommonMark & GFM Support:** Handles standard Markdown syntax including headings, lists (ordered, unordered, task lists), code blocks (indented), blockquotes, links (inline, reference*), images (inline alt text), and emphasis. Basic GFM table support is included. (*Reference links render literally if definition appears after usage due to streaming nature*).
 *   **Theming:** Configurable themes (`Default`, `Monochrome`, or custom) to control output appearance.
 *   **HTML Stripping:** Removes HTML tags from the output by default.
 *   **Word Wrapping:** Automatically wraps text to fit the specified console width.
@@ -24,13 +24,13 @@ You can install the library via NuGet.
 ### NuGet Package Manager
 
 ```powershell
-Install-Package ConsoleInk.Net -Version 0.1.0 # Adjust version as needed
+Install-Package ConsoleInk.Net -Version 0.1.1 # Adjust version if needed
 ```
 
 ### .NET CLI
 
 ```bash
-dotnet add package ConsoleInk.Net --version 0.1.0 # Adjust version as needed
+dotnet add package ConsoleInk.Net --version 0.1.1 # Adjust version if needed
 ```
 
 *(A dedicated PowerShell module `ConsoleInk.PowerShell` is planned but not yet available.)*
@@ -44,7 +44,7 @@ Add a reference to the `ConsoleInk.Net` package or project.
 See the `src/ConsoleInk.Demo` project for a runnable example.
 
 ```csharp
-using ConsoleInk.Net; // Ensure namespace is correct
+using ConsoleInk.Net; // Namespace is ConsoleInk
 using System.IO;
 
 // --- Batch Rendering ---
@@ -74,6 +74,7 @@ MarkdownConsole.Render(markdown, Console.Out, options);
 // --- Streaming Rendering ---
 var inputStream = new StringReader("## Streaming Demo\nContent arrives piece by piece...");
 
+// Use the writer within a 'using' block for automatic disposal and completion
 using (var writer = new MarkdownConsoleWriter(Console.Out, options))
 {
     char[] buffer = new char[50];
@@ -84,7 +85,7 @@ using (var writer = new MarkdownConsoleWriter(Console.Out, options))
         // writer.Flush(); // Optional: Flush periodically if needed
         System.Threading.Thread.Sleep(100); // Simulate delay
     }
-    writer.Complete(); // Signal end of input is crucial
+    // writer.Complete(); // No longer needed! Dispose called implicitly by 'using'.
 }
 ```
 

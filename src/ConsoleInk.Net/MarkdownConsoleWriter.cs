@@ -49,6 +49,7 @@ namespace ConsoleInk
         private readonly StringWriter _bufferWriter = new();
         private readonly Stack<string> _activeStyles = new(); // Track currently applied ANSI codes
         private bool _isDisposed = false;
+        private bool _isCompleted = false; // ADDED: Track completion state
 
         private MarkdownBlockType _currentBlockType = MarkdownBlockType.None;
         private MarkdownBlockType _lastFinalizedBlockType = MarkdownBlockType.None; // Track the last block type that was finalized
@@ -247,64 +248,166 @@ namespace ConsoleInk
 
         /// <summary>
         /// Signals that all input has been written and any final processing or cleanup should occur.
+        /// If not called explicitly, this method will be called automatically by Dispose.
+        /// Subsequent calls after the first have no effect.
         /// </summary>
         public void Complete()
         {
             CheckDisposed();
-            _log("Complete(): Entered.");
+            if (_isCompleted) // ADDED: Prevent re-execution
+            {
+                _log("Complete: Already completed, skipping.");
+                return;
+            }
+            _log("Complete: Starting finalization.");
 
+            // Process any remaining content in the line buffer as if it were the last line
             if(_lineBuffer.Length > 0)
             {
                 var finalLine = _lineBuffer.ToString();
-                _log($"Complete(): Processing final buffer content: \"{finalLine}\"");
+                _log($"Complete: Processing final buffer content: \"{finalLine}\"");
                 ProcessLine(finalLine); // Process final partial line if it exists
                 _lineBuffer.Clear(); // Clear after processing
             }
 
             var lastBlock = _currentBlockType;
-            _log($"Complete(): Finalizing last block: {lastBlock}");
+            _log($"Complete: Finalizing last block: {lastBlock}");
             FinalizeBlock(lastBlock); // End the very last block correctly
 
-            _log("Complete(): Flushing output writer.");
-            _outputWriter.Flush(); // Force flush to underlying writer
-            _log("Complete(): Exiting.");
+            ResetAllStyles();
+
+            _log("Complete: Flushing output writer.");
+            // Note: Flush itself might call Complete() again if overridden, but our check prevents recursion.
+            // We only flush the *underlying* writer here.
+            _outputWriter.Flush();
+
+            _isCompleted = true; // ADDED: Mark as completed
+            _log("Complete: Finalization finished.");
         }
 
         /// <summary>
-        /// Disposes the writer, ensuring completion.
+        /// Releases all resources used by the <see cref="MarkdownConsoleWriter"/>.
+        /// Calls <see cref="Complete"/> if it hasn't been called explicitly.
         /// </summary>
-        public new void Dispose()
+        public new void Dispose() // Use 'new' if hiding a base Dispose, or override if inheriting IDisposable directly
         {
-            Complete();
-            GC.SuppressFinalize(this);
+            _log("Dispose(): Public Dispose called.");
+            Dispose(true);
+            GC.SuppressFinalize(this); // Prevent finalizer from running
+            _log("Dispose(): Suppressed finalizer.");
+        }
+
+        /// <summary>
+        /// Releases the unmanaged resources used by the <see cref="MarkdownConsoleWriter"/> and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            _log($"Dispose(disposing={disposing}): Starting disposal. IsDisposed={_isDisposed}, IsCompleted={_isCompleted}");
+            // Check if Dispose has already been called.
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    _log($"Dispose: disposing=true.");
+                    // Dispose managed state (managed objects).
+                    // Call Complete() ONLY if it hasn't been done yet.
+                    if (!_isCompleted)
+                    {
+                        _log("Dispose: Calling Complete() automatically.");
+                        try
+                        {
+                            Complete();
+                        }
+                        catch (Exception ex)
+                        {
+                            _log($"Dispose: Exception during automatic Complete(): {ex.Message}");
+                            // Decide how to handle errors during auto-completion (log, suppress, rethrow?)
+                        }
+                    }
+
+                    // Dispose internal managed resources like the buffer writer.
+                    // Important: DO NOT dispose _outputWriter here, as it's owned externally.
+                    _bufferWriter?.Dispose();
+                     _log("Dispose: Disposed internal buffer writer.");
+                }
+
+                // Free unmanaged resources (unmanaged objects) and override finalizer
+                // (If we had any unmanaged resources, they would be released here)
+                 _log("Dispose: No unmanaged resources to free directly.");
+
+                // Set the disposed flag
+                _isDisposed = true;
+                _log("Dispose: Marked as disposed.");
+            } else {
+                 _log("Dispose: Already disposed.");
+            }
+
+            // Call the base class implementation AFTER our logic.
+            // This ensures base resources are released even if our code throws (though it shouldn't).
+            base.Dispose(disposing);
+             _log($"Dispose(disposing={disposing}): Base Dispose called.");
+        }
+
+        /// <summary>
+        /// Finalizer to ensure resources are released even if Dispose wasn't called.
+        /// </summary>
+        ~MarkdownConsoleWriter()
+        {
+             _log("~MarkdownConsoleWriter(): Finalizer called.");
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: false);
         }
 
         // --- Async Overrides (Delegating to sync methods for simplicity initially) ---
 
+        /// <summary>
+        /// Asynchronously writes a character to the text string or stream.
+        /// </summary>
+        /// <param name="value">The character to write.</param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
         public override Task WriteAsync(char value)
         {
             Write(value);
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Asynchronously writes a string to the text string or stream.
+        /// </summary>
+        /// <param name="value">The string to write.</param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
         public override Task WriteAsync(string? value)
         {
             Write(value);
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Asynchronously writes a string followed by a line terminator to the text string or stream.
+        /// </summary>
+        /// <param name="value">The string to write.</param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
         public override Task WriteLineAsync(string? value)
         {
             WriteLine(value);
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Asynchronously writes a line terminator to the text string or stream.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
         public override Task WriteLineAsync()
         {
             WriteLine();
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Asynchronously clears all buffers for the current writer and causes any buffered data to be written to the underlying device.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous flush operation.</returns>
         public override Task FlushAsync()
         {
             Flush();
@@ -312,23 +415,6 @@ namespace ConsoleInk
         }
 
         // --- Dispose Pattern ---
-
-        protected override void Dispose(bool disposing)
-        {
-            if (!_isDisposed)
-            {
-                if (disposing)
-                {
-                    // Ensure completion before disposing
-                    Complete(); 
-                    // We don't dispose _outputWriter as we don't own it.
-                    _bufferWriter.Dispose(); // Dispose the internal StringWriter buffer
-                }
-                _isDisposed = true;
-            }
-            // Call base dispose AFTER our logic
-            base.Dispose(disposing);
-        }
 
         private void CheckDisposed()
         {
@@ -922,11 +1008,9 @@ namespace ConsoleInk
                 currentPosition += lengthToTake;
 
                 // Skip the space we wrapped at (if any) for the next line
-                bool skippedSpace = false;
                 if (currentPosition < text.Length && text[currentPosition] == ' ')
                 {
                     currentPosition++;
-                    skippedSpace = true;
                 }
 
                 // Add newline if there's more text to write
@@ -1166,7 +1250,7 @@ namespace ConsoleInk
                         else
                         {
                             outputBuffer.Append(styleCode); 
-                            if (styleType != null) 
+                            if (styleType != null) // ADDED null check
                             {
                                 styleStack.Push(styleType);
                             }

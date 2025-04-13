@@ -24,34 +24,59 @@ namespace ConsoleInk
 
         // --- Theme Properties ---
 
+        /// <summary>Gets or sets the color for Level 1 Headings.</summary>
         public ConsoleColor? Heading1Color { get; set; } = ConsoleColor.Yellow;
+        /// <summary>Gets or sets the ANSI style code(s) for Level 1 Headings.</summary>
         public string Heading1Style { get; set; } = Ansi.Bold;
+        /// <summary>Gets or sets the color for Level 2 Headings.</summary>
         public ConsoleColor? Heading2Color { get; set; } = ConsoleColor.Cyan;
+        /// <summary>Gets or sets the ANSI style code(s) for Level 2 Headings.</summary>
         public string Heading2Style { get; set; } = Ansi.Underline;
+        /// <summary>Gets or sets the color for Level 3 Headings.</summary>
         public ConsoleColor? Heading3Color { get; set; } = ConsoleColor.Green;
+        /// <summary>Gets or sets the ANSI style code(s) for Level 3 Headings.</summary>
         public string Heading3Style { get; set; } = ""; // No default style for H3
+        /// <summary>Gets or sets the color for Level 4 Headings.</summary>
         public ConsoleColor? Heading4Color { get; set; } = ConsoleColor.Magenta;
+        /// <summary>Gets or sets the color for Level 5 Headings.</summary>
         public ConsoleColor? Heading5Color { get; set; } = ConsoleColor.Blue;
+        /// <summary>Gets or sets the color for Level 6 Headings.</summary>
         public ConsoleColor? Heading6Color { get; set; } = ConsoleColor.DarkYellow;
 
+        /// <summary>Gets or sets the foreground color for link text.</summary>
         public ConsoleColor? LinkForegroundColor { get; set; } = ConsoleColor.Blue;
+        /// <summary>Gets or sets the complete ANSI style code(s) applied to link text (e.g., includes color and underline).</summary>
         public string LinkTextStyle { get; set; } = Ansi.Underline + Ansi.FgBlue;
+        /// <summary>Gets or sets the complete ANSI style code(s) applied to link URLs (often dimmed).</summary>
         public string LinkUrlStyle { get; set; } = Ansi.Faint;
+        /// <summary>Gets or sets the background color for link text (null for default).</summary>
         public ConsoleColor? LinkBackgroundColor { get; set; } = null;
+        /// <summary>Gets or sets a value indicating whether link text should be underlined (redundant if LinkTextStyle includes underline).</summary>
         public bool LinkUnderline { get; set; } = true;
 
+        /// <summary>Gets or sets the foreground color for code blocks.</summary>
         public ConsoleColor? CodeForegroundColor { get; set; } = ConsoleColor.Gray;
+        /// <summary>Gets or sets the complete ANSI style code(s) applied to fenced code blocks.</summary>
         public string CodeBlockStyle { get; set; } = Ansi.FgBrightBlack;
+        /// <summary>Gets or sets the background color for code blocks (null for default).</summary>
         public ConsoleColor? CodeBackgroundColor { get; set; } = null; // Default background often looks best
 
+        /// <summary>Gets or sets the color for the blockquote marker and/or text.</summary>
         public ConsoleColor? BlockquoteColor { get; set; } = ConsoleColor.DarkGray;
+        /// <summary>Gets or sets the color for horizontal rules.</summary>
         public ConsoleColor? HorizontalRuleColor { get; set; } = ConsoleColor.DarkGray;
+        /// <summary>Gets or sets the color for list bullets/numbers.</summary>
         public ConsoleColor? ListBulletColor { get; set; } = ConsoleColor.Yellow; // Color for *, -, 1. etc.
+        /// <summary>Gets or sets the prefix string used for blockquotes (before styling).</summary>
         public string BlockquotePrefix { get; set; } = "| ";
+        /// <summary>Gets or sets the character used to draw horizontal rules.</summary>
         public char HorizontalRuleChar { get; set; } = '-';
+        /// <summary>Gets or sets the prefix used for unordered list items.</summary>
         public string UnorderedListPrefix { get; set; } = "* ";
+        /// <summary>Gets or sets the format string for ordered list item prefixes ({0} is replaced by the number).</summary>
         public string OrderedListPrefixFormat { get; set; } = "{0}. "; // {0} is the number
 
+        /// <summary>Gets or sets the complete ANSI style code(s) for inline code spans.</summary>
         public string InlineCodeStyle { get; set; } = Ansi.Faint; // Dimmed text for inline code
 
         /// <summary>
@@ -97,8 +122,11 @@ namespace ConsoleInk
         public string TaskListCheckedMarker { get; set; } = "[x] ";
 
         // --- Emphasis Styles ---
+        /// <summary>Gets or sets the ANSI style code(s) for bold emphasis.</summary>
         public string BoldStyle { get; set; } = Ansi.Bold;
+        /// <summary>Gets or sets the ANSI style code(s) for italic emphasis.</summary>
         public string ItalicStyle { get; set; } = Ansi.Italic;
+        /// <summary>Gets or sets the ANSI style code(s) for strikethrough emphasis.</summary>
         public string StrikethroughStyle { get; set; } = Ansi.Strikethrough;
 
         // TODO: Add more theme properties
