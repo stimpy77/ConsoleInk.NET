@@ -93,13 +93,13 @@ You can install the library via NuGet.
 ### NuGet Package Manager
 
 ```powershell
-Install-Package ConsoleInk.Net -Version 0.1.2 # Adjust version if needed
+Install-Package ConsoleInk.Net -Version 0.1.4 # Adjust version if needed
 ```
 
 ### .NET CLI
 
 ```bash
-dotnet add package ConsoleInk.Net --version 0.1.2 # Adjust version if needed
+dotnet add package ConsoleInk.Net --version 0.1.4 # Adjust version if needed
 ```
 
 ### PowerShell Module (`ConsoleInk.PowerShell`)
