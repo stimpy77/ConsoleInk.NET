@@ -1,13 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
     <!-- NuGet Package Information -->
     <PackageId>ConsoleInk.Net</PackageId>
-    <Version>0.1.2</Version> <!-- Or use 1.0.0-alpha1 etc. -->
+    <Version>0.1.4</Version> <!-- Or use 1.0.0-alpha1 etc. -->
     <Authors>Jon Davis</Authors> <!-- UPDATE THIS -->
     <Company>Envigorous Dynamics, LLC</Company> <!-- UPDATE THIS -->
     <Description>A lightweight, zero-dependency .NET library for rendering Markdown text directly into ANSI-formatted output suitable for modern console applications. Focuses on streaming processing for efficient rendering.</Description>

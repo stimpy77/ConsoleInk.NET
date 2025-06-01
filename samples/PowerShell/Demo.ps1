@@ -1,5 +1,8 @@
 #Requires -Version 7.2
 
+# NOTE: This script demonstrates direct DLL usage, not the PowerShell module.
+# For module usage, see Demo-Module.ps1 in this folder.
+
 <#
 .SYNOPSIS
 Demonstrates using the ConsoleInk.Net library directly from PowerShell.

@@ -1249,9 +1249,9 @@ namespace ConsoleInk
                             // Basic parsing for url and optional title
                             int firstSpace = urlPart.IndexOf(' ');
                             bool hasTitle = firstSpace != -1 && urlPart.Length > firstSpace + 2 && 
-                                            ((urlPart[firstSpace + 1] == '"' && urlPart.EndsWith('"')) || 
-                                             (urlPart[firstSpace + 1] == '\'' && urlPart.EndsWith('\'')) ||
-                                             (urlPart[firstSpace + 1] == '(' && urlPart.EndsWith(')')));
+    ((urlPart[firstSpace + 1] == '"' && urlPart.EndsWith("\"")) || 
+     (urlPart[firstSpace + 1] == '\'' && urlPart.EndsWith("'")) ||
+     (urlPart[firstSpace + 1] == '(' && urlPart.EndsWith(")")));
 
                             if (hasTitle)
                             {
@@ -1536,12 +1536,12 @@ namespace ConsoleInk
         {
             // Trim surrounding whitespace and potential outer pipes
             string trimmedLine = rowLine.Trim();
-            if (trimmedLine.StartsWith('|')) trimmedLine = trimmedLine.Substring(1);
+            if (trimmedLine.StartsWith("|")) trimmedLine = trimmedLine.Substring(1);
             // Trim trailing pipe only if it exists *after* potential leading pipe removal
-            if (trimmedLine.EndsWith('|')) trimmedLine = trimmedLine.Substring(0, trimmedLine.Length - 1);
+            if (trimmedLine.EndsWith("|")) trimmedLine = trimmedLine.Substring(0, trimmedLine.Length - 1);
 
             // Split by pipe, trim each cell
-            return trimmedLine.Split('|').Select(cell => cell.Trim()).ToList();
+            return trimmedLine.Split(new[] { "|" }, StringSplitOptions.None).Select(cell => cell.Trim()).ToList();
         }
 
         private void ParseAndStoreTableHeaderAndSeparator(string headerLine, string separatorLine)
@@ -1565,8 +1565,8 @@ namespace ConsoleInk
 
                 // Determine alignment based on the raw separator
                 string trimmedSep = sep.Trim();
-                bool left = trimmedSep.StartsWith(':');
-                bool right = trimmedSep.EndsWith(':');
+                bool left = trimmedSep.StartsWith(":");
+                bool right = trimmedSep.EndsWith(":");
                 ColumnAlignment alignment;
 
                 if (left && right)
@@ -1699,14 +1699,14 @@ namespace ConsoleInk
                      if (targetWidth >= 2)
                      {
                          var chars = dashes.ToCharArray();
-                         chars[0] = ':';
-                         chars[targetWidth - 1] = ':';
-                         separatorString = new string(chars);
+chars[0] = ':';
+chars[targetWidth - 1] = ':';
+separatorString = new string(chars);
                      }
                      else // Width 1? Just use colon?
                      { 
-                         separatorString = ":"; // Or maybe "-"? GFM needs at least 3 dashes total per cell...
-                         _log($"WriteTable WARN: Center align with width {targetWidth} might be ambiguous.");
+                         separatorString = ":";
+_log($"WriteTable WARN: Center align with width {targetWidth} might be ambiguous.");
                      }
                 }
                 else if (alignment == ColumnAlignment.Right)
@@ -1714,27 +1714,27 @@ namespace ConsoleInk
                      if (targetWidth >= 1)
                      {
                          var chars = dashes.ToCharArray();
-                         chars[targetWidth - 1] = ':';
-                         separatorString = new string(chars);
+chars[targetWidth - 1] = ':';
+separatorString = new string(chars);
                      }
                      else
                      {
-                         separatorString = "-"; // Fallback
-                         _log($"WriteTable WARN: Right align with width {targetWidth} might be ambiguous.");
+                         separatorString = "-";
+_log($"WriteTable WARN: Right align with width {targetWidth} might be ambiguous.");
                      }
                     
                 }
                 else // Left alignment (or default)
                 {
-                    if (targetWidth >= 1 && _tableSeparatorStrings[i].Trim().StartsWith(':'))
-                    {
-                         var chars = dashes.ToCharArray();
-                         chars[0] = ':';
-                         separatorString = new string(chars);
-                    }
+                    if (targetWidth >= 1 && _tableSeparatorStrings[i].Trim().StartsWith(":"))
+{
+    var chars = dashes.ToCharArray();
+    chars[0] = ':';
+    separatorString = new string(chars);
+}
                     else
                     {
-                        separatorString = dashes; // Just dashes
+                        separatorString = dashes;
                     }
                    
                 }

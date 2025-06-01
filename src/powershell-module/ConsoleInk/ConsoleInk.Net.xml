@@ -1,0 +1,595 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ConsoleInk.Net</name>
+    </assembly>
+    <members>
+        <member name="T:ConsoleInk.Ansi">
+            <summary>
+            Provides common ANSI escape code constants for terminal formatting.
+            Reference: https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_(Select_Graphic_Rendition)_parameters
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.Reset">
+            <summary>
+            Resets all attributes to their default state.
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.Bold">
+            <summary>
+            Applies bold (increased intensity) style.
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.Faint">
+            <summary>
+            Applies faint (decreased intensity) style. (Not widely supported)
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.Italic">
+            <summary>
+            Applies italic style. (Not widely supported)
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.Underline">
+            <summary>
+            Applies underline style.
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.SlowBlink">
+            <summary>
+            Applies slow blink style. (Not widely supported)
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.RapidBlink">
+            <summary>
+            Applies rapid blink style. (Not widely supported)
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.ReverseVideo">
+            <summary>
+            Swaps foreground and background colors.
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.Conceal">
+            <summary>
+            Hides text. (Not widely supported)
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.Strikethrough">
+            <summary>
+            Applies strikethrough style. (Not widely supported)
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BoldOff">
+            <summary>
+            Turns off bold and faint styles.
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.ItalicOff">
+            <summary>
+            Turns off italic style.
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.UnderlineOff">
+            <summary>
+            Turns off underline style.
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BlinkOff">
+            <summary>
+            Turns off blink style.
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.ReverseVideoOff">
+            <summary>
+            Turns off reverse video style.
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.ConcealOff">
+            <summary>
+            Turns off conceal style.
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.StrikethroughOff">
+            <summary>
+            Turns off strikethrough style.
+            </summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgBlack">
+            <summary>Sets foreground color to Black.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgRed">
+            <summary>Sets foreground color to Red.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgGreen">
+            <summary>Sets foreground color to Green.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgYellow">
+            <summary>Sets foreground color to Yellow.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgBlue">
+            <summary>Sets foreground color to Blue.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgMagenta">
+            <summary>Sets foreground color to Magenta.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgCyan">
+            <summary>Sets foreground color to Cyan.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgWhite">
+            <summary>Sets foreground color to White.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgDefault">
+            <summary>Resets foreground color to the default.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgBrightBlack">
+            <summary>Sets foreground color to Bright Black (Gray).</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgBrightRed">
+            <summary>Sets foreground color to Bright Red.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgBrightGreen">
+            <summary>Sets foreground color to Bright Green.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgBrightYellow">
+            <summary>Sets foreground color to Bright Yellow.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgBrightBlue">
+            <summary>Sets foreground color to Bright Blue.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgBrightMagenta">
+            <summary>Sets foreground color to Bright Magenta.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgBrightCyan">
+            <summary>Sets foreground color to Bright Cyan.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.FgBrightWhite">
+            <summary>Sets foreground color to Bright White.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgBlack">
+            <summary>Sets background color to Black.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgRed">
+            <summary>Sets background color to Red.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgGreen">
+            <summary>Sets background color to Green.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgYellow">
+            <summary>Sets background color to Yellow.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgBlue">
+            <summary>Sets background color to Blue.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgMagenta">
+            <summary>Sets background color to Magenta.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgCyan">
+            <summary>Sets background color to Cyan.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgWhite">
+            <summary>Sets background color to White.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgDefault">
+            <summary>Resets background color to the default.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgBrightBlack">
+            <summary>Sets background color to Bright Black (Gray).</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgBrightRed">
+            <summary>Sets background color to Bright Red.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgBrightGreen">
+            <summary>Sets background color to Bright Green.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgBrightYellow">
+            <summary>Sets background color to Bright Yellow.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgBrightBlue">
+            <summary>Sets background color to Bright Blue.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgBrightMagenta">
+            <summary>Sets background color to Bright Magenta.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgBrightCyan">
+            <summary>Sets background color to Bright Cyan.</summary>
+        </member>
+        <member name="F:ConsoleInk.Ansi.BgBrightWhite">
+            <summary>Sets background color to Bright White.</summary>
+        </member>
+        <member name="M:ConsoleInk.Ansi.FgColor256(System.Byte)">
+            <summary>Generates the ANSI escape code for a 256-color palette foreground color.</summary>
+            <param name="code">The 8-bit color code (0-255).</param>
+            <returns>The ANSI escape sequence string.</returns>
+        </member>
+        <member name="M:ConsoleInk.Ansi.BgColor256(System.Byte)">
+            <summary>Generates the ANSI escape code for a 256-color palette background color.</summary>
+            <param name="code">The 8-bit color code (0-255).</param>
+            <returns>The ANSI escape sequence string.</returns>
+        </member>
+        <member name="M:ConsoleInk.Ansi.FgColorTrue(System.Byte,System.Byte,System.Byte)">
+            <summary>Generates the ANSI escape code for a 24-bit ("true color") foreground color.</summary>
+            <param name="r">The red component (0-255).</param>
+            <param name="g">The green component (0-255).</param>
+            <param name="b">The blue component (0-255).</param>
+            <returns>The ANSI escape sequence string.</returns>
+        </member>
+        <member name="M:ConsoleInk.Ansi.BgColorTrue(System.Byte,System.Byte,System.Byte)">
+            <summary>Generates the ANSI escape code for a 24-bit ("true color") background color.</summary>
+            <param name="r">The red component (0-255).</param>
+            <param name="g">The green component (0-255).</param>
+            <param name="b">The blue component (0-255).</param>
+            <returns>The ANSI escape sequence string.</returns>
+        </member>
+        <member name="M:ConsoleInk.Ansi.HyperlinkStart(System.String,System.String)">
+            <summary>
+            Generates the OSC 8 sequence to start a hyperlink.
+            </summary>
+            <param name="url">The target URL.</param>
+            <param name="id">Optional ID for the link.</param>
+            <returns>The ANSI escape sequence to start the hyperlink.</returns>
+        </member>
+        <member name="M:ConsoleInk.Ansi.HyperlinkEnd">
+            <summary>
+            Generates the OSC 8 sequence to end a hyperlink.
+            </summary>
+            <returns>The ANSI escape sequence to end the hyperlink.</returns>
+        </member>
+        <member name="M:ConsoleInk.Ansi.GetColorCode(System.Nullable{System.ConsoleColor},System.Boolean)">
+            <summary>
+            Gets the ANSI escape sequence for a standard System.ConsoleColor.
+            </summary>
+            <param name="color">The ConsoleColor to get the code for.</param>
+            <param name="foreground">True for foreground color, false for background color.</param>
+            <returns>The ANSI escape sequence string, or an empty string if color is null.</returns>
+        </member>
+        <member name="T:ConsoleInk.ConsoleTheme">
+            <summary>
+            Defines the color and styling theme for Markdown rendering.
+            </summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.Default">
+            <summary>
+            Gets the default theme with standard console colors.
+            </summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.Monochrome">
+            <summary>
+            Gets a theme that uses no color, relying only on default foreground/background.
+            </summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.Heading1Color">
+            <summary>Gets or sets the color for Level 1 Headings.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.Heading1Style">
+            <summary>Gets or sets the ANSI style code(s) for Level 1 Headings.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.Heading2Color">
+            <summary>Gets or sets the color for Level 2 Headings.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.Heading2Style">
+            <summary>Gets or sets the ANSI style code(s) for Level 2 Headings.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.Heading3Color">
+            <summary>Gets or sets the color for Level 3 Headings.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.Heading3Style">
+            <summary>Gets or sets the ANSI style code(s) for Level 3 Headings.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.Heading4Color">
+            <summary>Gets or sets the color for Level 4 Headings.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.Heading5Color">
+            <summary>Gets or sets the color for Level 5 Headings.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.Heading6Color">
+            <summary>Gets or sets the color for Level 6 Headings.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.LinkForegroundColor">
+            <summary>Gets or sets the foreground color for link text.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.LinkTextStyle">
+            <summary>Gets or sets the complete ANSI style code(s) applied to link text (e.g., includes color and underline).</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.LinkUrlStyle">
+            <summary>Gets or sets the complete ANSI style code(s) applied to link URLs (often dimmed).</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.LinkBackgroundColor">
+            <summary>Gets or sets the background color for link text (null for default).</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.LinkUnderline">
+            <summary>Gets or sets a value indicating whether link text should be underlined (redundant if LinkTextStyle includes underline).</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.CodeForegroundColor">
+            <summary>Gets or sets the foreground color for code blocks.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.CodeBlockStyle">
+            <summary>Gets or sets the complete ANSI style code(s) applied to fenced code blocks.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.CodeBackgroundColor">
+            <summary>Gets or sets the background color for code blocks (null for default).</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.BlockquoteColor">
+            <summary>Gets or sets the color for the blockquote marker and/or text.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.HorizontalRuleColor">
+            <summary>Gets or sets the color for horizontal rules.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.ListBulletColor">
+            <summary>Gets or sets the color for list bullets/numbers.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.BlockquotePrefix">
+            <summary>Gets or sets the prefix string used for blockquotes (before styling).</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.HorizontalRuleChar">
+            <summary>Gets or sets the character used to draw horizontal rules.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.UnorderedListPrefix">
+            <summary>Gets or sets the prefix used for unordered list items.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.OrderedListPrefixFormat">
+            <summary>Gets or sets the format string for ordered list item prefixes ({0} is replaced by the number).</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.InlineCodeStyle">
+            <summary>Gets or sets the complete ANSI style code(s) for inline code spans.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.BlockquoteMarkerStyle">
+            <summary>
+            Gets or sets the style for the blockquote marker (e.g., '>').
+            Defaults to Dim styling.
+            </summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.BlockquoteMarker">
+            <summary>
+            Gets or sets the marker character(s) used for blockquotes.
+            Defaults to "> ".
+            </summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.ImageAltTextStyle">
+            <summary>
+            Gets or sets the style applied to the alt text of an image.
+            Defaults to Dim styling.
+            </summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.ImagePrefix">
+            <summary>
+            Gets or sets the prefix added before the alt text of an image.
+            Defaults to "[Image: ".
+            </summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.ImageSuffix">
+            <summary>
+            Gets or sets the suffix added after the alt text of an image.
+            Defaults to "]".
+            </summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.TaskListUncheckedMarker">
+            <summary>
+            Gets or sets the marker string used for an unchecked task list item.
+            Defaults to "[ ] ".
+            </summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.TaskListCheckedMarker">
+            <summary>
+            Gets or sets the marker string used for a checked task list item.
+            Defaults to "[x] ".
+            </summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.BoldStyle">
+            <summary>Gets or sets the ANSI style code(s) for bold emphasis.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.ItalicStyle">
+            <summary>Gets or sets the ANSI style code(s) for italic emphasis.</summary>
+        </member>
+        <member name="P:ConsoleInk.ConsoleTheme.StrikethroughStyle">
+            <summary>Gets or sets the ANSI style code(s) for strikethrough emphasis.</summary>
+        </member>
+        <member name="M:ConsoleInk.ConsoleTheme.CreateMonochromeTheme">
+            <summary>
+            Creates a monochrome theme instance.
+            </summary>
+        </member>
+        <member name="T:ConsoleInk.MarkdownConsole">
+            <summary>
+            Provides static helper methods for rendering Markdown directly to the console or a string.
+            </summary>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsole.Render(System.String,ConsoleInk.MarkdownRenderOptions)">
+            <summary>
+            Renders the specified Markdown text to a string with ANSI escape codes.
+            </summary>
+            <param name="markdownText">The Markdown text to render.</param>
+            <param name="options">Optional configuration for rendering.</param>
+            <returns>A string containing the rendered output with ANSI codes.</returns>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsole.Render(System.String,System.IO.TextWriter,ConsoleInk.MarkdownRenderOptions)">
+            <summary>
+            Renders the specified Markdown text directly to the provided TextWriter.
+            </summary>
+            <param name="markdownText">The Markdown text to render.</param>
+            <param name="outputWriter">The TextWriter to write the formatted output to.</param>
+            <param name="options">Optional configuration for rendering.</param>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsole.Render(System.IO.TextReader,System.IO.TextWriter,ConsoleInk.MarkdownRenderOptions)">
+            <summary>
+            Renders Markdown content read from a TextReader to the specified TextWriter.
+            </summary>
+            <param name="markdownReader">The TextReader providing the Markdown content.</param>
+            <param name="outputWriter">The TextWriter to write the formatted output to.</param>
+            <param name="options">Optional configuration for rendering.</param>
+        </member>
+        <member name="T:ConsoleInk.MarkdownBlockType">
+            <summary>
+            Represents the type of Markdown block currently being processed.
+            </summary>
+        </member>
+        <member name="T:ConsoleInk.ColumnAlignment">
+            <summary>
+            Specifies text alignment within a table column.
+            </summary>
+        </member>
+        <member name="T:ConsoleInk.MarkdownConsoleWriter">
+            <summary>
+            A TextWriter implementation that processes Markdown input incrementally
+            and writes formatted output to an underlying TextWriter (typically Console.Out).
+            </summary>
+        </member>
+        <member name="P:ConsoleInk.MarkdownConsoleWriter.Encoding">
+            <summary>
+            Gets the encoding for this writer (defaults to the output writer's encoding).
+            </summary>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.#ctor(System.IO.TextWriter,ConsoleInk.MarkdownRenderOptions,System.Action{System.String})">
+            <summary>
+            Initializes a new instance of the <see cref="T:ConsoleInk.MarkdownConsoleWriter"/> class.
+            </summary>
+            <param name="outputWriter">The underlying TextWriter to write formatted output to.</param>
+            <param name="options">Optional configuration for rendering.</param>
+            <param name="logger">Optional action to receive detailed logging messages.</param>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter._log(System.String)">
+            <summary>
+            Helper method to safely invoke the logger.
+            </summary>
+            <param name="message">The message to log.</param>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.Write(System.Char)">
+            <summary>
+            Writes a single character to the writer.
+            Characters are buffered line by line for processing.
+            </summary>
+            <param name="value">The character to write.</param>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.Write(System.String)">
+            <summary>
+            Writes a string to the writer.
+            </summary>
+            <param name="value">The string to write.</param>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.WriteLine(System.String)">
+            <summary>
+            Writes a string followed by a line terminator to the writer.
+            </summary>
+            <param name="value">The string to write.</param>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.WriteLine">
+            <summary>
+            Writes a line terminator to the writer.
+            </summary>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.ApplyStyle(System.String)">
+            <summary>
+            Applies an ANSI style code if colors are enabled.
+            </summary>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.ResetCurrentStyle">
+            <summary>
+            Resets the last applied ANSI style if colors are enabled.
+            More sophisticated reset logic might be needed for nested styles.
+            </summary>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.Complete">
+            <summary>
+            Signals that all input has been written and any final processing or cleanup should occur.
+            If not called explicitly, this method will be called automatically by Dispose.
+            Subsequent calls after the first have no effect.
+            </summary>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.Dispose">
+            <summary>
+            Releases all resources used by the <see cref="T:ConsoleInk.MarkdownConsoleWriter"/>.
+            Calls <see cref="M:ConsoleInk.MarkdownConsoleWriter.Complete"/> if it hasn't been called explicitly.
+            </summary>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.Dispose(System.Boolean)">
+            <summary>
+            Releases the unmanaged resources used by the <see cref="T:ConsoleInk.MarkdownConsoleWriter"/> and optionally releases the managed resources.
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.Finalize">
+            <summary>
+            Finalizer to ensure resources are released even if Dispose wasn't called.
+            </summary>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.WriteAsync(System.Char)">
+            <summary>
+            Asynchronously writes a character to the text string or stream.
+            </summary>
+            <param name="value">The character to write.</param>
+            <returns>A task that represents the asynchronous write operation.</returns>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.WriteAsync(System.String)">
+            <summary>
+            Asynchronously writes a string to the text string or stream.
+            </summary>
+            <param name="value">The string to write.</param>
+            <returns>A task that represents the asynchronous write operation.</returns>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.WriteLineAsync(System.String)">
+            <summary>
+            Asynchronously writes a string followed by a line terminator to the text string or stream.
+            </summary>
+            <param name="value">The string to write.</param>
+            <returns>A task that represents the asynchronous write operation.</returns>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.WriteLineAsync">
+            <summary>
+            Asynchronously writes a line terminator to the text string or stream.
+            </summary>
+            <returns>A task that represents the asynchronous write operation.</returns>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.FlushAsync">
+            <summary>
+            Asynchronously clears all buffers for the current writer and causes any buffered data to be written to the underlying device.
+            </summary>
+            <returns>A task that represents the asynchronous flush operation.</returns>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.Flush">
+            <summary>
+            Clears all buffers for this writer and causes any buffered data to be written to the underlying device.
+            </summary>
+        </member>
+        <member name="T:ConsoleInk.MarkdownRenderOptions">
+            <summary>
+            Provides options for configuring Markdown rendering behavior.
+            </summary>
+        </member>
+        <member name="P:ConsoleInk.MarkdownRenderOptions.ConsoleWidth">
+            <summary>
+            Gets or sets the width (in characters) to use for word wrapping.
+            Defaults to Console.WindowWidth if available, otherwise 80.
+            </summary>
+        </member>
+        <member name="P:ConsoleInk.MarkdownRenderOptions.EnableColors">
+            <summary>
+            Gets or sets a value indicating whether ANSI color codes should be included in the output.
+            Defaults to true.
+            </summary>
+        </member>
+        <member name="P:ConsoleInk.MarkdownRenderOptions.Theme">
+            <summary>
+            Gets or sets the theme to use for styling.
+            Defaults to ConsoleTheme.Default.
+            </summary>
+        </member>
+        <member name="P:ConsoleInk.MarkdownRenderOptions.StripHtml">
+            <summary>
+            Gets or sets a value indicating whether raw HTML tags should be stripped from the output.
+            Defaults to true.
+            </summary>
+        </member>
+        <member name="P:ConsoleInk.MarkdownRenderOptions.UseHyperlinks">
+            <summary>
+            Gets or sets a value indicating whether links should be rendered using OSC 8 hyperlink escape sequences.
+            If false (default), links are rendered with standard ANSI styling (color/underline).
+            If true, links are rendered as clickable hyperlinks in supported terminals.
+            </summary>
+        </member>
+        <member name="M:ConsoleInk.MarkdownRenderOptions.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ConsoleInk.MarkdownRenderOptions"/> class with default values.
+            </summary>
+        </member>
+    </members>
+</doc>

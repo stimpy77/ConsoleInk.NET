@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>ConsoleInk.PowerShell.Build</AssemblyName>
+    <RootNamespace>ConsoleInk.PowerShell.Build</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <OutputType>Library</OutputType>
+    <NoWarn>CS2008</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ConsoleInk.Net\ConsoleInk.Net.csproj" />
+  </ItemGroup>
+  <Target Name="CopyConsoleInkNetDll" AfterTargets="Build">
+    <PropertyGroup>
+      <ConsoleInkNetOutputDir>..\ConsoleInk.Net\bin\Debug\netstandard2.0</ConsoleInkNetOutputDir>
+    </PropertyGroup>
+    <ItemGroup>
+      <BuiltDll Include="$(ConsoleInkNetOutputDir)\ConsoleInk.Net.dll" />
+      <BuiltXml Include="$(ConsoleInkNetOutputDir)\ConsoleInk.Net.xml" />
+    </ItemGroup>
+    <Error Condition="!Exists('$(ConsoleInkNetOutputDir)\ConsoleInk.Net.dll')" Text="ConsoleInk.Net.dll was not built. Build of ConsoleInk.Net failed or output path is wrong." />
+    <Copy SourceFiles="@(BuiltDll)" DestinationFolder="$(MSBuildThisFileDirectory)lib" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(BuiltXml)" DestinationFolder="$(MSBuildThisFileDirectory)lib" SkipUnchangedFiles="true" Condition="Exists('@(BuiltXml)')" />
+  </Target>
+</Project>
