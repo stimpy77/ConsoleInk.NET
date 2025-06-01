@@ -122,7 +122,7 @@ public class ConsoleTheme {
 - **PowerShell Module (ConsoleInk.PowerShell):**
 ```powershell
 # Primary cmdlet with pipeline support
-function ConvertTo-ConsoleMarkdown {
+function ConvertTo-Markdown {
     [CmdletBinding(DefaultParameterSetName='Text')]
     param(
         [Parameter(Mandatory=$true, Position=0, ValueFromPipeline=$true, ParameterSetName='Text')]
@@ -415,7 +415,7 @@ This document outlines standard and widely-adopted Markdown features relevant fo
    - Escaping and backslash handling
    - Reference-style links
 3. **Implement PowerShell module**
-   - ConvertTo-ConsoleMarkdown cmdlet with pipeline support
+   - ConvertTo-Markdown cmdlet with pipeline support
    - Show-Markdown cmdlet for direct viewing
    - PowerShell-specific optimizations
 4. **Performance optimization**
