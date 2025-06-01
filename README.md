@@ -221,7 +221,47 @@ dotnet run --project src/ConsoleInk.Demo/ConsoleInk.Demo.csproj
 
 #### Option 1: PowerShell Module (Recommended)
 
-Use the official module for native cmdlets. See above for details and [Demo-Module.ps1](samples/PowerShell/Demo-Module.ps1).
+The `ConsoleInk` PowerShell module provides the `ConvertTo-Markdown` cmdlet for rendering Markdown directly in the console, with full support for pipeline input, file input, themes, width, color options, and hyperlinks.
+
+**Install from PowerShell Gallery:**
+```powershell
+Install-Module -Name ConsoleInk -Scope CurrentUser
+```
+
+**Import the module:**
+```powershell
+Import-Module ConsoleInk
+```
+
+**Render Markdown from a string:**
+```powershell
+'## Hello from ConsoleInk!' | ConvertTo-Markdown
+```
+
+**Render Markdown from a file:**
+```powershell
+ConvertTo-Markdown -Path ./README.md
+```
+
+**Customize output:**
+```powershell
+'## Monochrome' | ConvertTo-Markdown -Theme Monochrome
+'## No Color' | ConvertTo-Markdown -NoColor
+'## Custom Width' | ConvertTo-Markdown -Width 100
+```
+
+**Pipeline usage:**
+```powershell
+Get-Content ./README.md | ConvertTo-Markdown
+```
+
+For a comprehensive, feature-rich example, see [Demo-Module-PSGallery.ps1](samples/PowerShell/Demo-Module-PSGallery.ps1), which covers:
+- Pipeline input
+- File input
+- Theme selection (Default/Monochrome)
+- Width selection
+- Hyperlink rendering (OSC 8)
+- Error handling
 
 #### Option 2: Direct DLL Loading
 
