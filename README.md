@@ -8,7 +8,7 @@
 
 - **Targets:** .NET Standard 2.0 (C# 10.0 features required)
 - **NuGet Package:** [ConsoleInk.Net](https://www.nuget.org/packages/ConsoleInk.Net/)
-- **PowerShell Module:** Included (`ConsoleInk.PowerShell`) for native PowerShell cmdlets
+- **PowerShell Module:** Included (`ConsoleInk`) for native PowerShell cmdlets
 - **Latest Version:** 0.1.4
 - **Compatible with:** .NET Core, .NET Framework, PowerShell 7+, Windows PowerShell 5.1+
 
@@ -102,11 +102,45 @@ Install-Package ConsoleInk.Net -Version 0.1.4 # Adjust version if needed
 dotnet add package ConsoleInk.Net --version 0.1.4 # Adjust version if needed
 ```
 
-### PowerShell Module (`ConsoleInk.PowerShell`)
+### PowerShell Module (`ConsoleInk`)
 
-A native PowerShell module is included! Use `ConvertTo-Markdown` and `Show-Markdown` cmdlets for Markdown rendering directly in the console, with full support for pipeline input, file input, themes, width, color options, and hyperlinks.
+A native PowerShell module is included! Use the `ConvertTo-Markdown` cmdlet for Markdown rendering directly in the console, with full support for pipeline input, file input, themes, width, color options, and hyperlinks.
 
 **All debugging logs and manual type checks have been removed**—the module now provides clean, user-friendly output. If `Import-Module` succeeds, all cmdlets will work as shown in the demo. Troubleshooting is only needed if you see a true error message.
+
+#### PowerShell Module Quick Start
+
+**Install from PowerShell Gallery:**
+```powershell
+Install-Module -Name ConsoleInk -Scope CurrentUser
+```
+
+**Import the module:**
+```powershell
+Import-Module ConsoleInk
+```
+
+**Render Markdown from a string:**
+```powershell
+'## Hello from ConsoleInk!' | ConvertTo-Markdown
+```
+
+**Render Markdown from a file:**
+```powershell
+ConvertTo-Markdown -Path ./README.md
+```
+
+**Customize output:**
+```powershell
+'## Monochrome' | ConvertTo-Markdown -Theme Monochrome
+'## No Color' | ConvertTo-Markdown -NoColor
+'## Custom Width' | ConvertTo-Markdown -Width 100
+```
+
+**Pipeline usage:**
+```powershell
+Get-Content ./README.md | ConvertTo-Markdown
+```
 
 See [samples/PowerShell/Demo-Module.ps1](samples/PowerShell/Demo-Module.ps1) for a comprehensive, feature-rich example covering:
 - Pipeline input
@@ -116,25 +150,8 @@ See [samples/PowerShell/Demo-Module.ps1](samples/PowerShell/Demo-Module.ps1) for
 - Hyperlink rendering (OSC 8)
 - Error handling
 
-**Quick Start:**
-
-```powershell
-# Import the module (after building the project)
-Import-Module "./src/powershell-module/ConsoleInk.PowerShell.psd1" -Force
-
-# Render Markdown from a string
-"# Hello from PowerShell!`n*This is a test*" | ConvertTo-Markdown -Theme Default
-
-# Render Markdown from a file
-ConvertTo-Markdown -Path ./README.md -Theme Monochrome
-
-# Show-Markdown is an alias for ConvertTo-Markdown
-"# Demo" | Show-Markdown -Width 60
-```
-
-**Cmdlets:**
-- `ConvertTo-Markdown` (main)
-- `Show-Markdown` (alias, same parameters)
+**Cmdlet:**
+- `ConvertTo-Markdown`
 
 Supports pipeline and file input, width, theme selection, color toggling, and hyperlinks. See the [Demo-Module.ps1](samples/PowerShell/Demo-Module.ps1) for a full-featured demonstration.
 
@@ -250,7 +267,7 @@ You can specify `-LibPath` if you want to use a custom build directory.
 
 - **0.1.4** (2025-06-01):
     - Full .NET Standard 2.0 migration for library, demo, and PowerShell module
-    - PowerShell module (`ConsoleInk.PowerShell`) released: `ConvertTo-Markdown` and `Show-Markdown` cmdlets, pipeline/file input, themes, color
+    - PowerShell module (`ConsoleInk`) released: `ConvertTo-Markdown` and `Show-Markdown` cmdlets, pipeline/file input, themes, color
     - All build/test/demo projects updated for compatibility and C# 10.0 features
     - Type-mismatch and build errors resolved for .NET Standard
     - Documentation updated for new module and usage
