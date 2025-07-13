@@ -142,7 +142,7 @@ ConvertTo-Markdown -Path ./README.md
 Get-Content ./README.md | ConvertTo-Markdown
 ```
 
-See [samples/PowerShell/Demo-Module.ps1](samples/PowerShell/Demo-Module.ps1) for a comprehensive, feature-rich example covering:
+See [samples/PowerShell/Demo-Module-PSGallery.ps1](samples/PowerShell/Demo-Module-PSGallery.ps1) for a comprehensive, feature-rich example covering:
 - Pipeline input
 - File input
 - Theme selection (Default/Monochrome)
@@ -153,7 +153,7 @@ See [samples/PowerShell/Demo-Module.ps1](samples/PowerShell/Demo-Module.ps1) for
 **Cmdlet:**
 - `ConvertTo-Markdown`
 
-Supports pipeline and file input, width, theme selection, color toggling, and hyperlinks. See the [Demo-Module.ps1](samples/PowerShell/Demo-Module.ps1) for a full-featured demonstration.
+Supports pipeline and file input, width, theme selection, color toggling, and hyperlinks. See the [Demo-Module.ps1](samples/PowerShell/Demo-Module-PSGallery.ps1) for a full-featured demonstration.
 
 **Tip:** The .NET namespace for all types is `ConsoleInk` (e.g., `[ConsoleInk.MarkdownRenderOptions]`).
 
