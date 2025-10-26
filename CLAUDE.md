@@ -125,3 +125,8 @@ All public types use namespace `ConsoleInk` (not `ConsoleInk.Net` despite projec
 - Optional `logger` parameter in `MarkdownConsoleWriter` constructor accepts `Action<string>` for detailed state machine logging
 - `_log()` method throughout state machine transitions
 - Tests can enable logging via `AssertRender()` helper
+
+## Git Commit Guidelines
+- DO NOT add "Co-Authored-By: Claude" or similar co-authorship claims to commit messages
+- DO NOT add "Generated with Claude Code" footer to commit messages
+- Keep commit messages professional and focused on the technical changes
