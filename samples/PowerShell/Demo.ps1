@@ -27,7 +27,7 @@ PowerShell 7.2+ is recommended for better compatibility with modern .NET assembl
 param (
     # Relative path to the directory containing the ConsoleInk.Net.dll
     # Adjust if your build configuration or target framework differs.
-    [string]$LibPath = '../../src/ConsoleInk.Net/bin/Debug/net9.0'
+    [string]$LibPath = '../../src/ConsoleInk.Net/bin/Debug/netstandard2.0'
 )
 
 # --- Configuration ---
