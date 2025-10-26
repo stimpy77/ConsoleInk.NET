@@ -8,17 +8,17 @@
 
     <!-- NuGet Package Information -->
     <PackageId>ConsoleInk.Net</PackageId>
-    <Version>0.1.4</Version> <!-- Or use 1.0.0-alpha1 etc. -->
-    <Authors>Jon Davis</Authors> <!-- UPDATE THIS -->
-    <Company>Envigorous Dynamics, LLC</Company> <!-- UPDATE THIS -->
+    <Version>0.1.5</Version>
+    <Authors>Jon Davis</Authors>
+    <Company>Envigorous Dynamics, LLC</Company>
     <Description>A lightweight, zero-dependency .NET library for rendering Markdown text directly into ANSI-formatted output suitable for modern console applications. Focuses on streaming processing for efficient rendering.</Description>
-    <Copyright>Copyright (c) $([System.DateTime]::UtcNow.ToString(yyyy)) Jonathan Michael Davis or Envigorous Dynamics, LLC</Copyright> <!-- UPDATE THIS -->
+    <Copyright>Copyright (c) $([System.DateTime]::UtcNow.ToString(yyyy)) Jonathan Michael Davis or Envigorous Dynamics, LLC</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/stimpy77/ConsoleInk.NET</RepositoryUrl> <!-- UPDATE THIS -->
+    <RepositoryUrl>https://github.com/stimpy77/ConsoleInk.NET</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>markdown;console;ansi;terminal;net;netstandard;powershell;streaming;rendering</PackageTags>
-    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <PackageReleaseNotes>v0.1.5: Fixed hyperlinks and inline formatting (bold, italic, etc.) not rendering in list items.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
     <!-- Source Link & Symbols -->
