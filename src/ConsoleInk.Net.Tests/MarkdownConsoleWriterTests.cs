@@ -858,6 +858,51 @@ Four | | Six
 
         // TODO: Add test for table containing inline markdown (e.g., bold text)
 
+        // --- Link Tests in Lists ---
+
+        [Fact]
+        public void Render_LinksInListItems()
+        {
+            var input = @"# Header
+
+[Google](https://google.com)
+- [Google](https://google.com)
+- [GitHub](https://github.com)";
+
+            var options = new MarkdownRenderOptions { EnableColors = true };
+            var bulletPrefix = Ansi.GetColorCode(options.Theme.ListBulletColor, foreground: true) + options.Theme.UnorderedListPrefix + Ansi.Reset + " ";
+            var expected = $@"{Ansi.Bold}Header{Ansi.Reset}
+
+{options.Theme.LinkTextStyle}Google{Ansi.Reset} ({options.Theme.LinkUrlStyle}https://google.com{Ansi.Reset})
+{bulletPrefix}{options.Theme.LinkTextStyle}Google{Ansi.Reset} ({options.Theme.LinkUrlStyle}https://google.com{Ansi.Reset})
+{bulletPrefix}{options.Theme.LinkTextStyle}GitHub{Ansi.Reset} ({options.Theme.LinkUrlStyle}https://github.com{Ansi.Reset})
+";
+            AssertRender(input, expected, options, trimLeadingWhitespace: false);
+        }
+
+        [Fact]
+        public void Render_LinksInListItems_WithHyperlinks()
+        {
+            var input = @"# Header
+
+[Google](https://google.com)
+- [Google](https://google.com)
+- [GitHub](https://github.com)";
+
+            var options = new MarkdownRenderOptions { UseHyperlinks = true, EnableColors = true };
+            var esc = "\x1B";
+            var bel = "\a";
+            var st = esc + @"\";
+            var bulletPrefix = Ansi.GetColorCode(options.Theme.ListBulletColor, foreground: true) + options.Theme.UnorderedListPrefix + Ansi.Reset + " ";
+            var expected = $@"{Ansi.Bold}Header{Ansi.Reset}
+
+{esc}]8;;https://google.com{bel}Google{esc}]8;;{st}
+{bulletPrefix}{esc}]8;;https://google.com{bel}Google{esc}]8;;{st}
+{bulletPrefix}{esc}]8;;https://github.com{bel}GitHub{esc}]8;;{st}
+";
+            AssertRender(input, expected, options, trimLeadingWhitespace: false);
+        }
+
         // --- Combination Tests (Can be added later) ---
 
     }

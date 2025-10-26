@@ -733,7 +733,24 @@ namespace ConsoleInk
         private void ProcessLine(string line)
         {
             _log($"ProcessLine START: Input='{line}', CurrentBlock={_currentBlockType}, NeedsSeparation={_needsSeparationBeforeNextBlock}");
-            // --- PRE-PROCESSING: Add separator if flagged --- 
+
+            // Check if we're continuing in a list - peek ahead before applying separation
+            // Lists should not have separation between items of the same list
+            if (_needsSeparationBeforeNextBlock &&
+                (_currentBlockType == MarkdownBlockType.UnorderedList || _currentBlockType == MarkdownBlockType.OrderedList))
+            {
+                string trimmed = line.TrimStart();
+                bool isListItem = (trimmed.StartsWith("* ") || trimmed.StartsWith("- ") || trimmed.StartsWith("+ ")) ||
+                                  (trimmed.Length > 0 && char.IsDigit(trimmed[0]) && trimmed.Contains(". "));
+
+                if (isListItem)
+                {
+                    _log("ProcessLine: Continuing list - clearing separation flag to avoid extra newlines between items.");
+                    _needsSeparationBeforeNextBlock = false;
+                }
+            }
+
+            // --- PRE-PROCESSING: Add separator if flagged ---
             if (_needsSeparationBeforeNextBlock)
             {
                 _log("ProcessLine: Applying separation newline before processing.");
@@ -1015,16 +1032,14 @@ namespace ConsoleInk
             // Apply bullet/number color
             string bulletStyle = Ansi.GetColorCode(_options.Theme.ListBulletColor, foreground: true);
             _log($"WriteListItem: Applying bullet style ('{bulletStyle}').");
-            ApplyStyle(bulletStyle); 
-            WriteToOutput(bullet); 
-            ResetCurrentStyle(); 
-            _outputWriter.Write(" "); // Add space after bullet/marker
+            ApplyStyle(bulletStyle);
+            WriteToOutput(bullet);
+            ResetCurrentStyle();
 
-            // Write the list item content
-            _log($"WriteListItem: Writing text '{textAfterBullet}'.");
-            _outputWriter.Write(textAfterBullet); 
-            _log("WriteListItem: Writing Environment.NewLine.");
-            _outputWriter.Write(Environment.NewLine); // Use Environment.NewLine
+            // Write the list item content with inline formatting (links, emphasis, etc.)
+            // Add a space before the text to separate it from the marker
+            _log($"WriteListItem: Writing text '{textAfterBullet}' with inline formatting.");
+            WriteFormattedParagraph(" " + textAfterBullet); // Prepend space, WriteFormattedParagraph handles formatting and newline
 
             _currentBlockType = listType; // Should this be set here or ProcessLine?
             _log($"WriteListItem END: CurrentBlockType remains {listType}");
