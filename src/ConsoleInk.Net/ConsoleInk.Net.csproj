@@ -8,7 +8,7 @@
 
     <!-- NuGet Package Information -->
     <PackageId>ConsoleInk.Net</PackageId>
-    <Version>0.1.5</Version>
+    <Version>0.1.6</Version>
     <Authors>Jon Davis</Authors>
     <Company>Envigorous Dynamics, LLC</Company>
     <Description>A lightweight, zero-dependency .NET library for rendering Markdown text directly into ANSI-formatted output suitable for modern console applications. Focuses on streaming processing for efficient rendering.</Description>
