@@ -42,13 +42,22 @@ if (-not (Test-Path $dllFullPath)) {
     exit 1
 }
 
-# Load the Assembly
-Write-Host "Loading Assembly: $dllFullPath"
-try {
-    Add-Type -Path $dllFullPath -ErrorAction Stop
-} catch {
-    Write-Error "Failed to load ConsoleInk.Net assembly. Error: $($_.Exception.Message)"
-    exit 1
+# Load the Assembly (only if not already loaded)
+$assemblyName = 'ConsoleInk.Net'
+$alreadyLoaded = [System.AppDomain]::CurrentDomain.GetAssemblies() |
+    Where-Object { $_.GetName().Name -eq $assemblyName }
+
+if ($alreadyLoaded) {
+    Write-Host "Assembly '$assemblyName' is already loaded in this session." -ForegroundColor Yellow
+} else {
+    Write-Host "Loading Assembly: $dllFullPath"
+    try {
+        Add-Type -Path $dllFullPath -ErrorAction Stop
+        Write-Host "Assembly loaded successfully." -ForegroundColor Green
+    } catch {
+        Write-Error "Failed to load ConsoleInk.Net assembly. Error: $($_.Exception.Message)"
+        exit 1
+    }
 }
 
 # Sample Markdown Text (using PowerShell Here-String)
