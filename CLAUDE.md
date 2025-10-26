@@ -34,15 +34,19 @@ When transitioning between Markdown blocks:
 ## Development Commands
 
 ### Build
+**One-step build for everything:**
 ```bash
 dotnet build src/ConsoleInk.sln
 ```
+This builds all projects and automatically copies the ConsoleInk.Net.dll to the PowerShell module location (`src/powershell-module/ConsoleInk/lib/`) via the `ConsoleInk.PowerShell.Build` MSBuild project.
 
 For Release build (generates NuGet packages):
 ```bash
 dotnet build src/ConsoleInk.sln -c Release
 ```
 NuGet package (`.nupkg`) and symbols (`.snupkg`) will be in `src/ConsoleInk.Net/bin/Release/`
+
+**Note:** The PowerShell module DLL is NOT committed to git. It's copied during build via MSBuild targets in `src/powershell-module/ConsoleInk.PowerShell.Build.csproj`.
 
 ### Run Tests
 ```bash
@@ -95,6 +99,7 @@ pwsh -File ./samples/PowerShell/Demo.ps1
 - Stack-based style tracking (`_activeStyles`) for nested emphasis
 - Specific ANSI off-codes (`[22m` for bold, `[23m` for italic, `[29m` for strikethrough) instead of generic reset
 - Backslash escaping for literal markers (`\*`, `\_`, `\~`, `\!`, `\[`, `\]`, `\(`, `\)`, `\\`)
+- **List items use inline formatting**: `WriteListItem()` calls `WriteFormattedParagraph()` to ensure links, bold, italic, and other inline styles render properly within list items (see line 1042)
 
 ### Reference Links Limitation
 Due to streaming nature, reference link definitions must appear **before** usage in the input. If a reference link is encountered before its definition, it renders literally. This is documented as a known streaming limitation.
@@ -111,6 +116,7 @@ Controlled by `_needsSeparationBeforeNextBlock` flag:
 - Paragraphs only set it if they produced output
 - Link definitions never set it (non-rendering)
 - Blank lines reset current block but don't force separation
+- **Special case for lists**: Consecutive list items of the same list type clear the separation flag to prevent extra newlines between items (see lines 737-751 in `MarkdownConsoleWriter.cs`)
 
 ### Test Conventions
 - ANSI escape sequences in expected output use constants from `Ansi` class

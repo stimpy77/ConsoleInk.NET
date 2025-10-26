@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- This is a build-only project, no actual output -->
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <!-- Reference the main library project to ensure it builds first -->
+  <ItemGroup>
+    <ProjectReference Include="..\ConsoleInk.Net\ConsoleInk.Net.csproj" />
+  </ItemGroup>
+
+  <!-- After build, copy the DLL and XML to the PowerShell module lib folder -->
+  <Target Name="CopyToModuleLib" AfterTargets="Build">
+    <PropertyGroup>
+      <LibSourcePath>$(MSBuildThisFileDirectory)..\ConsoleInk.Net\bin\$(Configuration)\netstandard2.0</LibSourcePath>
+      <LibDestPath>$(MSBuildThisFileDirectory)ConsoleInk\lib</LibDestPath>
+    </PropertyGroup>
+
+    <Message Text="Copying ConsoleInk.Net.dll to PowerShell module..." Importance="high" />
+
+    <!-- Ensure lib directory exists -->
+    <MakeDir Directories="$(LibDestPath)" />
+
+    <!-- Copy DLL and XML documentation -->
+    <Copy SourceFiles="$(LibSourcePath)\ConsoleInk.Net.dll" DestinationFolder="$(LibDestPath)" />
+    <Copy SourceFiles="$(LibSourcePath)\ConsoleInk.Net.xml" DestinationFolder="$(LibDestPath)" Condition="Exists('$(LibSourcePath)\ConsoleInk.Net.xml')" />
+
+    <Message Text="PowerShell module lib updated at: $(LibDestPath)" Importance="high" />
+  </Target>
+
+</Project>

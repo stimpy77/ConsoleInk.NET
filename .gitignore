@@ -398,3 +398,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# PowerShell module build artifacts (DLLs copied during build)
+src/powershell-module/ConsoleInk/lib/*.dll
+src/powershell-module/ConsoleInk/*.dll

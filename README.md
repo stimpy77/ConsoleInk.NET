@@ -282,16 +282,24 @@ You can specify `-LibPath` if you want to use a custom build directory.
     git clone https://github.com/stimpy77/ConsoleInk.NET.git
     cd ConsoleInk.NET
     ```
-2.  **Build the solution (including Library, Demo, and Tests):**
+2.  **Build the library:**
     ```bash
-    # Builds all projects referenced by the solution
-    dotnet build src/ConsoleInk.sln
+    # Builds the ConsoleInk.Net library
+    dotnet build src/ConsoleInk.Net/ConsoleInk.Net.csproj
     ```
     *   This will compile the `ConsoleInk.Net` library.
-    *   If building in `Release` configuration (`dotnet build src/ConsoleInk.sln -c Release`), the NuGet package (`.nupkg`) and symbols package (`.snupkg`) will be generated in `src/ConsoleInk.Net/bin/Release/`.
-    *   The PowerShell module will be available in `src/powershell-module/` after build. Import the module using its `.psd1` manifest.
+    *   If building in `Release` configuration (`dotnet build src/ConsoleInk.Net/ConsoleInk.Net.csproj -c Release`), the NuGet package (`.nupkg`) and symbols package (`.snupkg`) will be generated in `src/ConsoleInk.Net/bin/Release/`.
 
-3.  **Run tests:**
+3.  **Build the PowerShell module:**
+    ```powershell
+    # Build and copy DLL to PowerShell module
+    ./build-psmodule.ps1
+    ```
+    *   The PowerShell module requires the ConsoleInk.Net.dll to be copied to `src/powershell-module/ConsoleInk/lib/`.
+    *   **Note:** The DLL is not committed to git and must be built locally.
+    *   See `src/powershell-module/README.md` for more details.
+
+4.  **Run tests:**
     ```bash
     dotnet test src/ConsoleInk.sln
     ```
@@ -305,6 +313,11 @@ You can specify `-LibPath` if you want to use a custom build directory.
 
 ## Release Notes
 
+- **0.1.6** (2025-10-26):
+    - Fixed hyperlinks and inline formatting (bold, italic, strikethrough) not rendering in list items
+    - Improved PowerShell module build process - DLLs no longer committed to git
+    - Added `build-psmodule.ps1` script for streamlined PowerShell module builds
+    - Fixed PowerShell Demo.ps1 script issues
 - **0.1.4** (2025-06-01):
     - Full .NET Standard 2.0 migration for library, demo, and PowerShell module
     - PowerShell module (`ConsoleInk`) released: `ConvertTo-Markdown` and `Show-Markdown` cmdlets, pipeline/file input, themes, color
