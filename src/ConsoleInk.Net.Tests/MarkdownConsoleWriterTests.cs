@@ -905,5 +905,61 @@ Four | | Six
 
         // --- Combination Tests (Can be added later) ---
 
+        // --- Issue #2: WriteWrappedText visible length fix ---
+
+        [Fact]
+        public void Render_InlineLink_DoesNotWrapInsideEscapeSequence()
+        {
+            // Repro for issue #2: ANSI/hyperlink escape sequences were counted toward line
+            // width, causing wrap to happen mid-visible-word.
+            // Width 80: "Here is an example of a person John Smith who works in the engineering team."
+            // Without the fix the OSC 8 URL bytes push the wrap point into "John\nSmith".
+            var input = "Here is an example of a person **[John Smith](https://example.com/search?q=John+Smith&id=abc123-def456-7890)** who works in the engineering team.";
+            var options = new MarkdownRenderOptions
+            {
+                EnableColors = false,
+                UseHyperlinks = true,
+                ConsoleWidth = 80,
+            };
+
+            var output = new System.IO.StringWriter();
+            using (var writer = new MarkdownConsoleWriter(output, options))
+                writer.Write(input);
+
+            var rendered = output.ToString();
+            // The visible words "John Smith" must never be split across lines.
+            Assert.DoesNotContain("John\n", rendered);
+            Assert.DoesNotContain("John\r\n", rendered);
+        }
+
+        [Fact]
+        public void Render_AnsiStyled_WrapsOnVisibleWidth()
+        {
+            // With colors on, bold markers add escape bytes; wrapping must still respect
+            // visible character count, not raw string length.
+            var input = "Plain text followed by **bold text that extends the line** and more plain text here.";
+            var options = new MarkdownRenderOptions
+            {
+                EnableColors = true,
+                UseHyperlinks = false,
+                ConsoleWidth = 40,
+            };
+
+            var output = new System.IO.StringWriter();
+            using (var writer = new MarkdownConsoleWriter(output, options))
+                writer.Write(input);
+
+            var rendered = output.ToString();
+            // Strip ANSI escapes and check every visible line is <= 40 chars.
+            var visibleLinePattern = System.Text.RegularExpressions.Regex.Replace(
+                rendered, @"\x1b(?:\[[^m]*m|\][^\\]*(?:\x1b\\|\x07))", "");
+            foreach (var line in visibleLinePattern.Split('\n'))
+            {
+                var trimmed = line.TrimEnd('\r');
+                Assert.True(trimmed.Length <= 40,
+                    $"Line exceeds visible width 40: \"{trimmed}\" ({trimmed.Length} chars)");
+            }
+        }
+
     }
 }
