@@ -545,6 +545,24 @@
             </summary>
             <returns>A task that represents the asynchronous flush operation.</returns>
         </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.VisibleLength(System.String,System.Int32,System.Int32,System.Int32@)">
+            <summary>
+            Returns the number of visible (printable) characters in <paramref name="text"/>
+            starting at <paramref name="start"/>, skipping ANSI CSI escape sequences
+            (ESC [ ... m) and OSC 8 hyperlink sequences (ESC ] 8 ;; url ST).
+            Stops counting when <paramref name="maxVisible"/> visible chars have been seen
+            or the end of the string is reached.
+            Returns the raw-string index at which the visible count was reached via
+            <paramref name="endIndex"/>.
+            </summary>
+        </member>
+        <member name="M:ConsoleInk.MarkdownConsoleWriter.LastVisibleSpace(System.String,System.Int32,System.Int32)">
+            <summary>
+            Returns the raw-string index of the last space whose visible position is
+            within [<paramref name="start"/>, <paramref name="start"/> + <paramref name="visibleWidth"/>),
+            or -1 if none found.
+            </summary>
+        </member>
         <member name="M:ConsoleInk.MarkdownConsoleWriter.Flush">
             <summary>
             Clears all buffers for this writer and causes any buffered data to be written to the underlying device.

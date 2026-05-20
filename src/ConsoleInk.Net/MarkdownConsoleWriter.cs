@@ -1046,6 +1046,95 @@ namespace ConsoleInk
         }
 
         // Simple word wrapping helper
+        /// <summary>
+        /// Returns the number of visible (printable) characters in <paramref name="text"/>
+        /// starting at <paramref name="start"/>, skipping ANSI CSI escape sequences
+        /// (ESC [ ... m) and OSC 8 hyperlink sequences (ESC ] 8 ;; url ST).
+        /// Stops counting when <paramref name="maxVisible"/> visible chars have been seen
+        /// or the end of the string is reached.
+        /// Returns the raw-string index at which the visible count was reached via
+        /// <paramref name="endIndex"/>.
+        /// </summary>
+        private static int VisibleLength(string text, int start, int maxVisible, out int endIndex)
+        {
+            int visible = 0;
+            int i = start;
+            while (i < text.Length && visible < maxVisible)
+            {
+                char c = text[i];
+                if (c == '\x1b' && i + 1 < text.Length)
+                {
+                    char next = text[i + 1];
+                    if (next == '[') // CSI sequence: ESC [ ... m  (or other final byte)
+                    {
+                        i += 2;
+                        while (i < text.Length && !(text[i] >= 0x40 && text[i] <= 0x7E))
+                            i++;
+                        if (i < text.Length) i++; // consume final byte
+                        continue;
+                    }
+                    else if (next == ']') // OSC sequence: ESC ] ... ST  (ST = ESC \ or BEL)
+                    {
+                        i += 2;
+                        while (i < text.Length)
+                        {
+                            if (text[i] == '\x07') { i++; break; } // BEL terminator
+                            if (text[i] == '\x1b' && i + 1 < text.Length && text[i + 1] == '\\')
+                            { i += 2; break; } // ESC \ terminator
+                            i++;
+                        }
+                        continue;
+                    }
+                }
+                visible++;
+                i++;
+            }
+            endIndex = i;
+            return visible;
+        }
+
+        /// <summary>
+        /// Returns the raw-string index of the last space whose visible position is
+        /// within [<paramref name="start"/>, <paramref name="start"/> + <paramref name="visibleWidth"/>),
+        /// or -1 if none found.
+        /// </summary>
+        private static int LastVisibleSpace(string text, int start, int visibleWidth)
+        {
+            int lastSpace = -1;
+            int i = start;
+            int visible = 0;
+            while (i < text.Length && visible < visibleWidth)
+            {
+                char c = text[i];
+                if (c == '\x1b' && i + 1 < text.Length)
+                {
+                    char next = text[i + 1];
+                    if (next == '[')
+                    {
+                        i += 2;
+                        while (i < text.Length && !(text[i] >= 0x40 && text[i] <= 0x7E)) i++;
+                        if (i < text.Length) i++;
+                        continue;
+                    }
+                    else if (next == ']')
+                    {
+                        i += 2;
+                        while (i < text.Length)
+                        {
+                            if (text[i] == '\x07') { i++; break; }
+                            if (text[i] == '\x1b' && i + 1 < text.Length && text[i + 1] == '\\') { i += 2; break; }
+                            i++;
+                        }
+                        continue;
+                    }
+                }
+                if (c == ' ') lastSpace = i;
+                visible++;
+                i++;
+            }
+            return lastSpace;
+        }
+
         private void WriteWrappedText(string text)
         {
             int consoleWidth = _maxWidth;
@@ -1053,21 +1142,22 @@ namespace ConsoleInk
 
             while (currentPosition < text.Length)
             {
-                int lengthToTake = Math.Min(consoleWidth, text.Length - currentPosition);
+                // Determine how many raw chars cover `consoleWidth` visible chars from currentPosition
+                VisibleLength(text, currentPosition, consoleWidth, out int endIndex);
+                int lengthToTake = endIndex - currentPosition;
 
-                // If we are not at the end of the text, try to wrap at a space
-                if (currentPosition + lengthToTake < text.Length)
+                // If we are not at the end of the text, try to wrap at a visible space
+                if (endIndex < text.Length)
                 {
-                    int lastSpace = text.LastIndexOf(' ', currentPosition + lengthToTake - 1, lengthToTake);
-                    if (lastSpace > currentPosition) // Found a space to wrap at
+                    int lastSpace = LastVisibleSpace(text, currentPosition, consoleWidth);
+                    if (lastSpace > currentPosition)
                     {
                         lengthToTake = lastSpace - currentPosition;
                     }
-                    // else: No space found, we have to break the word (or the chunk fits perfectly)
                 }
 
                 string lineToWrite = text.Substring(currentPosition, lengthToTake);
-                _outputWriter.Write(lineToWrite); 
+                _outputWriter.Write(lineToWrite);
 
                 currentPosition += lengthToTake;
 
@@ -1081,9 +1171,6 @@ namespace ConsoleInk
                 if (currentPosition < text.Length)
                 {
                     _outputWriter.WriteLine();
-                    // If we did NOT skip a space (meaning the break was mid-word or perfect fit),
-                    // and the next char isn't a space, add one for separation.
-                    // (This seems overly complex, let's rethink - the issue might be joining in StartOrContinueParagraph)
                 }
             }
             // Ensure a final newline is written after the last line of the paragraph
